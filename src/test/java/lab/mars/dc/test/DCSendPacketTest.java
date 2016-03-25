@@ -10,7 +10,9 @@ import org.junit.Test;
  */
 public class DCSendPacketTest extends  DCTestBase{
 
-
+    /**
+     * 同步发送请求
+     */
     @Test
     public void testSynchronizeSend(){
         RequestPacket requestPacket=new RequestPacket();
@@ -26,6 +28,9 @@ public class DCSendPacketTest extends  DCTestBase{
         }
     }
 
+    /**
+     * 异步发送请求
+     */
     @Test
     public void testAsynchronousSend(){
         RequestPacket requestPacket=new RequestPacket();
