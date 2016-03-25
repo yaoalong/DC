@@ -1,9 +1,9 @@
 package lab.mars.dc.test;
 
-import lab.mars.dc.DataContent;
-import lab.mars.dc.OperateType;
-import lab.mars.dc.RequestPacket;
+import lab.mars.dc.*;
 import org.junit.Test;
+
+import javax.xml.ws.Response;
 
 /**
  * Author:yaoalong.
@@ -52,6 +52,8 @@ public class ResourceOperateTest extends  DCTestBase{
         requestPacket.setOperateType(OperateType.SERVICE);
         requestPacket.setData(new DataContent() {
         });
-        dc.send(requestPacket,asyncCallback);
+        ResponsePacket responsePacket=dc.send(requestPacket);
+        ResultDO resultDO=responsePacket.getResult();
+        //TODO 对计算结果进行处理
     }
 }
