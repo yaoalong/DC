@@ -13,6 +13,7 @@ import java.io.Serializable;
  */
 public class ResponsePacket implements Serializable{
 
+    private static final long serialVersionUID = -2602934100954710281L;
     /**
      * id
      * 操作表示码，用来表示异常

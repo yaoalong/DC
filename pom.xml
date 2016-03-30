@@ -6,31 +6,53 @@
 
     <groupId>lab.mars</groupId>
     <artifactId>DC</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>dc-collaboration-service</module>
+        <module>dc-collaboration-service-zookeeper</module>
+        <module>dc-loadbalance-interface</module>
+        <module>dc-loadbalance-consistenthash</module>
+        <module>dc-connectmanage-interface</module>
+        <module>dc-connectmanage-lru</module>
+        <module>dc-network</module>
+        <module>dc-db-interface</module>
+        <module>dc-db-cassandra</module>
+    </modules>
 
 
     <properties>
         <slf4j.version>1.7.12</slf4j.version>
         <log.version>1.2.17</log.version>
         <junit.version>4.11</junit.version>
+        <zookeeper.version>3.4.6</zookeeper.version>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--log-->
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!--log-->
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 </project>

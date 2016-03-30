@@ -3,6 +3,9 @@ package lab.mars.dc; /**
  * Date:2016/3/25.
  * Email:yaoalong@foxmail.com
  */
+
+import java.io.Serializable;
+
 /**
  * 请求数据包
  * id---资源的id
@@ -10,8 +13,9 @@ package lab.mars.dc; /**
  * OperateType---定义的是操作类型
  * data---如果是一个服务资源计算的话，那么有可能需要传入参数
  */
-public class RequestPacket {
+public class RequestPacket implements Serializable{
 
+    private static final long serialVersionUID = 1111221244099503861L;
     private String id;
     private ResourceService resourceService;
 
