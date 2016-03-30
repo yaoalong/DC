@@ -11,5 +11,13 @@
 
     <artifactId>dc-network</artifactId>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+        </dependency>
+
+    </dependencies>
 
 </project>
