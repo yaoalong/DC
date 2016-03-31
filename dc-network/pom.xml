@@ -46,6 +46,11 @@
             <artifactId>dc-connectmanage-lru</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dc-logic</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

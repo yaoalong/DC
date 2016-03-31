@@ -6,12 +6,11 @@ import lab.mars.dc.RequestPacket;
 import lab.mars.dc.connectmanage.LRUManage;
 import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
 import lab.mars.dc.network.TcpClient;
-import oracle.jrockit.jfr.events.RequestableEventEnvironment;
+import lag.mars.server.DCDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,18 +29,21 @@ public class ServerChannelHandler extends
 
     private LRUManage lruManage;
 
-    public ServerChannelHandler(LRUManage lruManage, LoadBalanceConsistentHash loadBalanceConsistentHash) {
+    private DCDatabase dcDatabase;
+
+    public ServerChannelHandler(LRUManage lruManage, LoadBalanceConsistentHash loadBalanceConsistentHash, DCDatabase dcDatabase) {
         this.lruManage = lruManage;
         this.loadBalanceConsistentHash = loadBalanceConsistentHash;
+        this.dcDatabase = dcDatabase;
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
         lruManage.refresh(ctx.channel());
-        RequestPacket m2mPacket = (RequestPacket) msg;
+        RequestPacket requestPacket = (RequestPacket) msg;
         try {
-            if (preProcessPacket(m2mPacket, ctx)) {
-
+            if (preProcessPacket(requestPacket, ctx)) {
+                dcDatabase.receiveMessage(requestPacket, ctx.channel());
 //                    M2mHandlerResult m2mHandlerResult = m2mHandler
 //                            .recv(m2mPacket);
 //
@@ -70,7 +72,7 @@ public class ServerChannelHandler extends
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-       lruManage.add(ctx.channel());
+        lruManage.add(ctx.channel());
         ctx.fireChannelRegistered();
     }
 
@@ -89,23 +91,22 @@ public class ServerChannelHandler extends
 
     /**
      * 对数据进行处理
-     * @param m2mPacket
+     * @param requestPacket
      * @param ctx
      * @return
      */
-    public boolean preProcessPacket(RequestPacket m2mPacket,
+    public boolean preProcessPacket(RequestPacket requestPacket,
                                     ChannelHandlerContext ctx) {
-        String key = m2mPacket.getId();
-
+        String key = requestPacket.getId();
 
 
         String server = loadBalanceConsistentHash.getServer(key);
-        if(server.equals(self)){
+        if (server.equals(self)) {
             return true;
         }
         if (ipAndTcpClient.containsKey(server)) {
-            ipAndTcpClient.get(server).write(m2mPacket);
-            ctx.writeAndFlush(m2mPacket);
+            ipAndTcpClient.get(server).write(requestPacket);
+            ctx.writeAndFlush(requestPacket);
             return false;
         } else {
             try {
@@ -114,15 +115,14 @@ public class ServerChannelHandler extends
                 tcpClient.connectionOne(splitStrings[0],
                         Integer.valueOf(splitStrings[1]));
 
-                tcpClient.write(m2mPacket);
-                ctx.writeAndFlush(m2mPacket);
+                tcpClient.write(requestPacket);
+                ctx.writeAndFlush(requestPacket);
                 ipAndTcpClient.put(server, tcpClient);
                 return false;
             } catch (Exception e) {
                 LOG.error("process packet error:{}", e);
             }
         }
-
 
 
         return false;

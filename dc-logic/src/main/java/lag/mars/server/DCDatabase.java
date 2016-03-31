@@ -20,7 +20,7 @@ public class DCDatabase {
     private ConcurrentHashMap<String, ResourceService> resourceServices = new ConcurrentHashMap<>();
     private DCDatabaseInterface dcDatabaseInterface;
 
-    private DCDatabase(DCDatabaseInterface dcDatabaseInterface) {
+    public DCDatabase(DCDatabaseInterface dcDatabaseInterface) {
         this.dcDatabaseInterface = dcDatabaseInterface;
     }
 
