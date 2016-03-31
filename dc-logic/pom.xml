@@ -9,22 +9,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dc-db-cassandra</artifactId>
-
+    <artifactId>dc-logic</artifactId>
 <dependencies>
 
     <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>dc-db-interface</artifactId>
+        <artifactId>dc-client</artifactId>
         <version>${project.version}</version>
     </dependency>
     <dependency>
-        <groupId>com.datastax.cassandra</groupId>
-        <artifactId>cassandra-driver-core</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dc-db-cassandra</artifactId>
+        <version>${project.version}</version>
     </dependency>
 </dependencies>
+
 </project>

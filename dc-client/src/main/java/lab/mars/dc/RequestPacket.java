@@ -56,5 +56,13 @@ public class RequestPacket implements Serializable{
     public void setFinished(boolean finished) {
         isFinished = finished;
     }
+
+    public ResourceService getResourceService() {
+        return resourceService;
+    }
+
+    public DataContent getData() {
+        return data;
+    }
 }
 

@@ -20,6 +20,7 @@
         <module>dc-db-cassandra</module>
         <module>dc-resource-pojo</module>
         <module>dc-client</module>
+        <module>dc-logic</module>
     </modules>
 
 
