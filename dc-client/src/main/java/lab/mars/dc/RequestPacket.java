@@ -23,6 +23,8 @@ public class RequestPacket implements Serializable{
 
 
     private DataContent data;
+
+    private boolean isFinished;
     public String getId() {
         return id;
     }
@@ -45,6 +47,14 @@ public class RequestPacket implements Serializable{
 
     public void setData(DataContent data) {
         this.data = data;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
     }
 }
 
