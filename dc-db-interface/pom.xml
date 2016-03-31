@@ -11,5 +11,13 @@
 
     <artifactId>dc-db-interface</artifactId>
 
+    <dependencies>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dc-resource-pojo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+    </dependencies>
 </project>

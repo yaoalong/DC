@@ -11,5 +11,20 @@
 
     <artifactId>dc-db-interface-cassandra</artifactId>
 
+<dependencies>
 
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dc-db-interface</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.datastax.cassandra</groupId>
+        <artifactId>cassandra-driver-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+    </dependency>
+</dependencies>
 </project>

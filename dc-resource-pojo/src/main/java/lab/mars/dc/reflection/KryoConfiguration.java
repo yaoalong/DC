@@ -3,7 +3,7 @@ package lab.mars.dc.reflection;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.esotericsoftware.reflectasm.FieldAccess;
-import org.lab.mars.ds.server.M2mDataNode;
+import lab.mars.dc.server.ResourceServiceDO;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -15,9 +15,13 @@ import java.util.*;
  * Created by haixiao on 2015/6/4. Email: wumo@outlook.com
  */
 public class KryoConfiguration {
-    /** used to pre-register all the needed classes in kryo */
+    /**
+     * used to pre-register all the needed classes in kryo
+     */
     private static Set<Class> resolvedClz;
-    /** used to deserialize the resource from Map&lt;String,Object&gt; */
+    /**
+     * used to deserialize the resource from Map&lt;String,Object&gt;
+     */
     private static Map<Class, ClassAccess> fieldAccessMap;
 
     static {
@@ -26,7 +30,7 @@ public class KryoConfiguration {
         fieldAccessMap = new HashMap<>();
         Set<Class> seedClz = new HashSet<>();
         // main resource element in data base
-        seedClz.add(M2mDataNode.class);
+        seedClz.add(ResourceServiceDO.class);
 
         for (Class clz : seedClz) {
             fieldAccessMap.put(clz, new ClassAccess(clz));
@@ -45,10 +49,10 @@ public class KryoConfiguration {
         for (Field field : fields) {
             int modifiers = field.getModifiers();
             if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers))// omit
-                                                                            // static
-                                                                            // and
-                                                                            // final
-                                                                            // field
+                // static
+                // and
+                // final
+                // field
                 continue;
             Class fieldCls = field.getType();
             if (!resolvedClz.contains(fieldCls))
@@ -93,10 +97,10 @@ public class KryoConfiguration {
             for (Field field : fields) {
                 int modifiers = field.getModifiers();
                 if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers))// omit
-                                                                                // static
-                                                                                // and
-                                                                                // final
-                                                                                // field
+                    // static
+                    // and
+                    // final
+                    // field
                     continue;
                 fieldIndex.put(field.getName(),
                         fieldAccess.getIndex(field.getName()));
