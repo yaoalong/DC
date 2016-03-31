@@ -1,12 +1,12 @@
 package lab.mars.dc.collaboration;
 
+import lab.mars.dc.loadbalance.LoadBalanceInterface;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooKeeper;
-import org.lab.mars.onem2m.consistent.hash.NetworkPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
      * zooKeeper服务器的地址
      */
     private String server;
-    private NetworkPool networkPool;
+    private LoadBalanceInterface loadBalanceInterface;
 
     public void run() {
         try {
@@ -76,8 +76,8 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
             return;
         }
         List<String> serverStrings = zooKeeper.getChildren(ROOT_NODE, null);
-        networkPool.setServers(serverStrings, true);
-        networkPool.initialize();
+        loadBalanceInterface.setServers(serverStrings);
+        loadBalanceInterface.initialize();
 
     }
 
@@ -89,19 +89,8 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
         this.server = server;
     }
 
-    public NetworkPool getNetworkPool() {
-        return networkPool;
+    public void setLoadBalanceInterface(LoadBalanceInterface loadBalanceInterface) {
+        this.loadBalanceInterface = loadBalanceInterface;
     }
 
-    public void setNetworkPool(NetworkPool networkPool) {
-        this.networkPool = networkPool;
-    }
-
-    public static void main(String args[]) {
-        ZooKeeper_Monitor zooKeeper_Monitor = new ZooKeeper_Monitor();
-        zooKeeper_Monitor.setServer("192.168.10.139:2181");
-        NetworkPool networkPool = new NetworkPool();
-        zooKeeper_Monitor.setNetworkPool(networkPool);
-        zooKeeper_Monitor.start();
-    }
 }

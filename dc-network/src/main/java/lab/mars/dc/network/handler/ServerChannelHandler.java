@@ -5,6 +5,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lab.mars.dc.RequestPacket;
 import lab.mars.dc.connectmanage.LRUManage;
 import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
+import lab.mars.dc.loadbalance.LoadBalanceInterface;
 import lab.mars.dc.network.TcpClient;
 import lag.mars.server.DCDatabase;
 import org.slf4j.Logger;
@@ -25,15 +26,15 @@ public class ServerChannelHandler extends
     private final LinkedList<RequestPacket> pendingQueue = new LinkedList<RequestPacket>();
     private ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
     private String self;
-    private LoadBalanceConsistentHash loadBalanceConsistentHash;
+    private LoadBalanceInterface loadBalanceInterface;
 
     private LRUManage lruManage;
 
     private DCDatabase dcDatabase;
 
-    public ServerChannelHandler(LRUManage lruManage, LoadBalanceConsistentHash loadBalanceConsistentHash, DCDatabase dcDatabase) {
+    public ServerChannelHandler(LRUManage lruManage, LoadBalanceInterface loadBalanceInterface, DCDatabase dcDatabase) {
         this.lruManage = lruManage;
-        this.loadBalanceConsistentHash = loadBalanceConsistentHash;
+        this.loadBalanceInterface = loadBalanceInterface;
         this.dcDatabase = dcDatabase;
     }
 
@@ -100,7 +101,7 @@ public class ServerChannelHandler extends
         String key = requestPacket.getId();
 
 
-        String server = loadBalanceConsistentHash.getServer(key);
+        String server = loadBalanceInterface.getServer(key);
         if (server.equals(self)) {
             return true;
         }

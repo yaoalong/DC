@@ -10,7 +10,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>dc-collaboration-service</module>
-        <module>dc-collaboration-service-zookeeper</module>
         <module>dc-loadbalance-interface</module>
         <module>dc-loadbalance-consistenthash</module>
         <module>dc-connectmanage-interface</module>
@@ -19,8 +18,9 @@
         <module>dc-db-interface</module>
         <module>dc-db-cassandra</module>
         <module>dc-resource-pojo</module>
-        <module>dc-client</module>
         <module>dc-logic</module>
+        <module>dc-start</module>
+        <module>dc-collaboration-service-zk</module>
     </modules>
 
 
@@ -44,6 +44,7 @@
         <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
         <maven.source.plugin.version>2.4</maven.source.plugin.version>
         <netty.version>4.0.30.Final</netty.version>
+        <zookeeper.version>3.4.6</zookeeper.version>
     </properties>
     <dependencyManagement>
 

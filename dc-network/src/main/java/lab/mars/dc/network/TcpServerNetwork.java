@@ -36,7 +36,7 @@ public class TcpServerNetwork {
 
     public void close() {
         channels.forEach(channel -> channel.close());
-        NetworkEventLoopGroup.shutdown();
+      //  NetworkEventLoopGroup.shutdown();
     }
 
     public void setChannelChannelInitializer(

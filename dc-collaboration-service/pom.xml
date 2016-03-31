@@ -9,7 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dc-collaborationservice</artifactId>
+    <artifactId>dc-collaboration-service</artifactId>
 
+<dependencies>
 
+    <dependency>
+        <groupId>lab.mars</groupId>
+        <artifactId>dc-loadbalance-interface</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
 </project>

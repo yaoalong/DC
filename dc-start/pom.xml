@@ -9,14 +9,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dc-client</artifactId>
+    <artifactId>dc-start</artifactId>
 
-<dependencies>
+    <dependencies>
 
-    <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>dc-network</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-</dependencies>
+        <dependency>
+            <groupId>lab.mars</groupId>
+            <artifactId>dc-network</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>lab.mars</groupId>
+            <artifactId>dc-collaboration-service-zk</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
