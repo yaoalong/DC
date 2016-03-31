@@ -51,6 +51,9 @@ public class ClientChannelHandler extends
             synchronized (packet) {
 //                packet.setM2mReplyHeader(m2mPacket.getM2mReplyHeader());
 //                packet.setResponse(m2mPacket.getResponse());
+                if(((RequestPacket)packet).getAsyncCallback()!=null){
+                    ((RequestPacket)packet).getAsyncCallback().processResult(null,null,null,null);
+                }
                 packet.notifyAll();
             }
 

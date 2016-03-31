@@ -11,5 +11,12 @@
 
     <artifactId>dc-client</artifactId>
 
+<dependencies>
 
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dc-network</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+</dependencies>
 </project>

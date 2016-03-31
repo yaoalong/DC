@@ -25,6 +25,8 @@ public class RequestPacket implements Serializable{
     private DataContent data;
 
     private boolean isFinished;
+
+    private AsyncCallback asyncCallback;
     public String getId() {
         return id;
     }
@@ -63,6 +65,14 @@ public class RequestPacket implements Serializable{
 
     public DataContent getData() {
         return data;
+    }
+
+    public AsyncCallback getAsyncCallback() {
+        return asyncCallback;
+    }
+
+    public void setAsyncCallback(AsyncCallback asyncCallback) {
+        this.asyncCallback = asyncCallback;
     }
 }
 
