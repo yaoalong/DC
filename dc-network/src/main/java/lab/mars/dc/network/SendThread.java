@@ -32,14 +32,14 @@ public class SendThread extends Thread {
     public void run() {
         while (true) {
             synchronized (outgoingQueue) {
-                if (outgoingQueue.isEmpty()) {
+                while (outgoingQueue.isEmpty()) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-                DCPacket requestPacket = outgoingQueue.getFirst();
+                DCPacket requestPacket = outgoingQueue.remove();
                 tcpClient.write(requestPacket);
                 synchronized (pendingQueue) {
                     pendingQueue.add(requestPacket);
