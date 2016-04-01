@@ -35,6 +35,7 @@ public abstract class TcpClientNetwork {
             channel = future.channel();
             condition.signalAll();
             reentrantLock.unlock();
+            System.out.println("链接成功");
         });
 
     }

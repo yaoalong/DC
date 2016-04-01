@@ -2,6 +2,7 @@ package lab.mars.dc.network.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lab.mars.dc.DCPacket;
 import lab.mars.dc.RequestPacket;
 import lab.mars.dc.ResponsePacket;
 import lab.mars.dc.network.TcpClient;
@@ -36,9 +37,9 @@ public class ClientChannelHandler extends
 
         try {
             if (tcpClient.getSendThread() != null) {
-                tcpClient.getSendThread().readResponse((ResponsePacket) msg);
+                tcpClient.getSendThread().readResponse((DCPacket) msg);
             } else {
-                readResponse((RequestPacket) msg);
+                readResponse((DCPacket) msg);
             }
 
         } catch (IOException e) {
@@ -46,8 +47,8 @@ public class ClientChannelHandler extends
         }
     }
 
-    private void readResponse(RequestPacket m2mPacket) throws IOException {
-        RequestPacket packet;
+    private void readResponse(DCPacket m2mPacket) throws IOException {
+        DCPacket packet;
         synchronized (tcpClient.getPendingQueue()) {
             if (tcpClient.getPendingQueue().size() == 0) {
                 throw new IOException("Nothing in the queue, but got "
@@ -56,11 +57,9 @@ public class ClientChannelHandler extends
             packet = tcpClient.getPendingQueue().remove();
             packet.setFinished(true);
             synchronized (packet) {
+                System.out.println("很共");
 //                packet.setM2mReplyHeader(m2mPacket.getM2mReplyHeader());
 //                packet.setResponse(m2mPacket.getResponse());
-                if (((RequestPacket) packet).getAsyncCallback() != null) {
-                    ((RequestPacket) packet).getAsyncCallback().processResult(null, null, null, null);
-                }
                 packet.notifyAll();
             }
 

@@ -1,5 +1,6 @@
 package lab.mars.dc.network;
 
+import lab.mars.dc.DCPacket;
 import lab.mars.dc.RequestPacket;
 import lab.mars.dc.network.initializer.PacketClientChannelInitializer;
 import org.slf4j.Logger;
@@ -16,16 +17,17 @@ public class TcpClient extends TcpClientNetwork {
 
     private static final Logger LOG = LoggerFactory.getLogger(TcpClient.class);
 
-    private LinkedList<RequestPacket> pendingQueue;
+    private LinkedList<DCPacket> pendingQueue;
     private SendThread sendThread;
     public TcpClient() {
+    	this.pendingQueue=new LinkedList<DCPacket>();
         setSocketChannelChannelInitializer(new PacketClientChannelInitializer(
                 this));
     }
     public TcpClient(SendThread sendThread){
         this.sendThread=sendThread;
     }
-    public TcpClient(LinkedList<RequestPacket> m2mPacket) {
+    public TcpClient(LinkedList<DCPacket> m2mPacket) {
         this();
         this.pendingQueue = m2mPacket;
 
@@ -45,13 +47,13 @@ public class TcpClient extends TcpClientNetwork {
         }
         if (pendingQueue != null) {
             synchronized (pendingQueue) {
-                pendingQueue.add((RequestPacket) msg);
+                pendingQueue.add((DCPacket) msg);
             }
 
         }
         channel.writeAndFlush(msg);
         synchronized (msg) {
-            while (!((RequestPacket) msg).isFinished()) {
+            while (!((DCPacket) msg).isFinished()) {
                 try {
                     msg.wait();
                 } catch (InterruptedException e) {
@@ -64,11 +66,11 @@ public class TcpClient extends TcpClientNetwork {
         return;
     }
 
-    public LinkedList<RequestPacket> getPendingQueue() {
+    public LinkedList<DCPacket> getPendingQueue() {
         return pendingQueue;
     }
 
-    public void setPendingQueue(LinkedList<RequestPacket> pendingQueue) {
+    public void setPendingQueue(LinkedList<DCPacket> pendingQueue) {
         this.pendingQueue = pendingQueue;
     }
 

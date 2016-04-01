@@ -1,5 +1,6 @@
 package lab.mars.dc.network;
 
+import lab.mars.dc.DCPacket;
 import lab.mars.dc.RequestPacket;
 import lab.mars.dc.ResponsePacket;
 
@@ -13,17 +14,17 @@ import java.util.LinkedList;
 public class SendThread extends Thread {
 
 
-    private final LinkedList<RequestPacket> pendingQueue = new LinkedList<RequestPacket>();
-    private final LinkedList<RequestPacket> outgoingQueue = new LinkedList<RequestPacket>();
+    private final LinkedList<DCPacket> pendingQueue = new LinkedList<DCPacket>();
+    private final LinkedList<DCPacket> outgoingQueue = new LinkedList<DCPacket>();
     private TcpClient tcpClient = new TcpClient();
 
     public SendThread() {
-        tcpClient.connectionOne("", 2);
+        tcpClient.connectionOne("192.168.10.131", 2181);
     }
 
-    public void send(RequestPacket requestPacket) {
+    public void send(DCPacket dcPacket) {
         synchronized (outgoingQueue) {
-            outgoingQueue.add(requestPacket);
+            outgoingQueue.add(dcPacket);
         }
     }
 
@@ -38,7 +39,7 @@ public class SendThread extends Thread {
                         e.printStackTrace();
                     }
                 }
-                RequestPacket requestPacket = outgoingQueue.getFirst();
+                DCPacket requestPacket = outgoingQueue.getFirst();
                 tcpClient.write(requestPacket);
                 synchronized (pendingQueue) {
                     pendingQueue.add(requestPacket);
@@ -46,7 +47,15 @@ public class SendThread extends Thread {
             }
         }
     }
-    public void readResponse(ResponsePacket responsePacket){
+    public void readResponse(DCPacket dcPacket){
+            synchronized (pendingQueue){
+                DCPacket dcPacket1=pendingQueue.remove();
+                System.out.println("kankan"+dcPacket1.getRequestPacket().getAsyncCallback()==null);
+                if(dcPacket1.getRequestPacket().getAsyncCallback()!=null){
+                    System.out.println("不为空");
+                    dcPacket1.getRequestPacket().getAsyncCallback().processResult(null,null,null,null);
+                }
 
+            }
     }
 }

@@ -2,6 +2,7 @@ package lab.mars.dc.network.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lab.mars.dc.DCPacket;
 import lab.mars.dc.RequestPacket;
 import lab.mars.dc.connectmanage.LRUManage;
 import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
@@ -23,7 +24,7 @@ public class ServerChannelHandler extends
         SimpleChannelInboundHandler<Object> {
     private static Logger LOG = LoggerFactory
             .getLogger(ServerChannelHandler.class);
-    private final LinkedList<RequestPacket> pendingQueue = new LinkedList<RequestPacket>();
+    private final LinkedList<DCPacket> pendingQueue = new LinkedList<DCPacket>();
     private ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
     private String self;
     private LoadBalanceInterface loadBalanceInterface;
@@ -32,7 +33,8 @@ public class ServerChannelHandler extends
 
     private DCDatabase dcDatabase;
 
-    public ServerChannelHandler(LRUManage lruManage, LoadBalanceInterface loadBalanceInterface, DCDatabase dcDatabase) {
+    public ServerChannelHandler(String self,LRUManage lruManage, LoadBalanceInterface loadBalanceInterface, DCDatabase dcDatabase) {
+    	this.self=self;
         this.lruManage = lruManage;
         this.loadBalanceInterface = loadBalanceInterface;
         this.dcDatabase = dcDatabase;
@@ -40,11 +42,12 @@ public class ServerChannelHandler extends
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
+        System.out.println("收到消息");
         lruManage.refresh(ctx.channel());
-        RequestPacket requestPacket = (RequestPacket) msg;
+        DCPacket dcPacket = (DCPacket) msg;
         try {
-            if (preProcessPacket(requestPacket, ctx)) {
-                dcDatabase.receiveMessage(requestPacket, ctx.channel());
+            if (preProcessPacket(dcPacket, ctx)) {
+                dcDatabase.receiveMessage(dcPacket, ctx.channel());
 //                    M2mHandlerResult m2mHandlerResult = m2mHandler
 //                            .recv(m2mPacket);
 //
@@ -91,14 +94,14 @@ public class ServerChannelHandler extends
     }
 
     /**
-     * 对数据进行处理
-     * @param requestPacket
+     * 数据包的处理
+     * @param dcPacket
      * @param ctx
      * @return
      */
-    public boolean preProcessPacket(RequestPacket requestPacket,
+    public boolean preProcessPacket(DCPacket dcPacket,
                                     ChannelHandlerContext ctx) {
-        String key = requestPacket.getId();
+        String key = dcPacket.getRequestPacket().getId();
 
 
         String server = loadBalanceInterface.getServer(key);
@@ -106,8 +109,8 @@ public class ServerChannelHandler extends
             return true;
         }
         if (ipAndTcpClient.containsKey(server)) {
-            ipAndTcpClient.get(server).write(requestPacket);
-            ctx.writeAndFlush(requestPacket);
+            ipAndTcpClient.get(server).write(dcPacket);
+            ctx.writeAndFlush(dcPacket);
             return false;
         } else {
             try {
@@ -116,8 +119,8 @@ public class ServerChannelHandler extends
                 tcpClient.connectionOne(splitStrings[0],
                         Integer.valueOf(splitStrings[1]));
 
-                tcpClient.write(requestPacket);
-                ctx.writeAndFlush(requestPacket);
+                tcpClient.write(dcPacket);
+                ctx.writeAndFlush(dcPacket);
                 ipAndTcpClient.put(server, tcpClient);
                 return false;
             } catch (Exception e) {

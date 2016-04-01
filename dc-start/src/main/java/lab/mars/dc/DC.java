@@ -43,7 +43,7 @@ public class DC {
         dcConfig.parse(args[0]);
         RegisterAndMonitorService registerableService=new RegisterAndMonitorService();
         registerableService.register(dcConfig.zooKeeperServer,dcConfig.myIp+":"+dcConfig.port,loadBalanceConsistentHash);
-        tcpServer=new TcpServer(dcConfig.numberOfViturlNodes,loadBalanceConsistentHash);
+        tcpServer=new TcpServer(dcConfig.myIp+":"+dcConfig.port,dcConfig.numberOfViturlNodes,loadBalanceConsistentHash);
         try {
             tcpServer.bind(dcConfig.myIp,dcConfig.port);
         } catch (InterruptedException e) {

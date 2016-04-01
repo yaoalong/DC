@@ -1,6 +1,7 @@
 package lag.mars.server;
 
 import io.netty.channel.Channel;
+import lab.mars.dc.DCPacket;
 import lab.mars.dc.OperateType;
 import lab.mars.dc.RequestPacket;
 import lab.mars.dc.ResourceService;
@@ -24,34 +25,34 @@ public class DCDatabase {
         this.dcDatabaseInterface = dcDatabaseInterface;
     }
 
-    public void receiveMessage(RequestPacket requestPacket, Channel channel) {
-
-        if (requestPacket.getOperateType().getCode() == OperateType.CREATE.getCode()) {
-            dcDatabaseInterface.create(requestPacket.getResourceService());
-            requestPacket.getResourceService().start();
-            resourceServices.put(requestPacket.getId(), requestPacket.getResourceService());
-        } else if (requestPacket.getOperateType().getCode() == OperateType.UPDATE.getCode()) {
-            byte[] service = ResourceReflection.serializeKryo(requestPacket.getResourceService());
-            ResourceServiceDO resourceServiceDO = new ResourceServiceDO();
-            resourceServiceDO.setId(requestPacket.getId());
-            resourceServiceDO.setData(service);
-            dcDatabaseInterface.update(requestPacket.getId(), resourceServiceDO);
-            if (resourceServices.contains(requestPacket.getId())) {
-                resourceServices.get(requestPacket.getId()).shutdown();
-                requestPacket.getResourceService().start();
-
-            }
-            resourceServices.put(requestPacket.getId(), requestPacket.getResourceService());
-        } else if (requestPacket.getOperateType().getCode() == OperateType.DELETE.getCode()) {
-            dcDatabaseInterface.delete(requestPacket.getId());
-            if (resourceServices.contains(requestPacket.getId())) {
-                resourceServices.get(requestPacket.getId()).shutdown();
-            }
-        } else if (requestPacket.getOperateType().getCode() == OperateType.RETRIEVE.getCode()) {
-            dcDatabaseInterface.retrieve(requestPacket.getId());
-        } else {
-            resourceServices.get(requestPacket.getId()).service(null);
-        }
+    public void receiveMessage(DCPacket dcPacket, Channel channel) {
+    	System.out.println("开始处理");
+            RequestPacket requestPacket=dcPacket.getRequestPacket();
+//        if (requestPacket.getOperateType().getCode() == OperateType.CREATE.getCode()) {
+//            dcDatabaseInterface.create(requestPacket.getResourceService());
+//            requestPacket.getResourceService().start();
+//            resourceServices.put(requestPacket.getId(), requestPacket.getResourceService());
+//        } else if (requestPacket.getOperateType().getCode() == OperateType.UPDATE.getCode()) {
+//            byte[] service = ResourceReflection.serializeKryo(requestPacket.getResourceService());
+//            ResourceServiceDO resourceServiceDO = new ResourceServiceDO();
+//            resourceServiceDO.setId(requestPacket.getId());
+//            resourceServiceDO.setData(service);
+//            dcDatabaseInterface.update(requestPacket.getId(), resourceServiceDO);
+//            if (resourceServices.contains(requestPacket.getId())) {
+//                resourceServices.get(requestPacket.getId()).shutdown();
+//                requestPacket.getResourceService().start();
+//
+//            }
+//            resourceServices.put(requestPacket.getId(), requestPacket.getResourceService());
+//        } else if (requestPacket.getOperateType().getCode() == OperateType.DELETE.getCode()) {
+//            dcDatabaseInterface.delete(requestPacket.getId());
+//            if (resourceServices.contains(requestPacket.getId())) {
+//                resourceServices.get(requestPacket.getId()).shutdown();
+//            }
+//        } else if (requestPacket.getOperateType().getCode() == OperateType.RETRIEVE.getCode()) {
+//            dcDatabaseInterface.retrieve(requestPacket.getId());
+//        }
+        channel.write(new DCPacket());
     }
 
 }

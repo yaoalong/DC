@@ -17,14 +17,12 @@ public class RequestPacket implements Serializable{
 
     private static final long serialVersionUID = 1111221244099503861L;
     private String id;
-    private ResourceService resourceService;
+  //  private ResourceService resourceService;
 
     private OperateType operateType;
 
 
-    private DataContent data;
-
-    private boolean isFinished;
+  //  private DataContent data;
 
     private AsyncCallback asyncCallback;
     public String getId() {
@@ -43,29 +41,22 @@ public class RequestPacket implements Serializable{
         this.operateType = operateType;
     }
 
-    public void setResourceService(ResourceService resourceService) {
-        this.resourceService = resourceService;
-    }
-
-    public void setData(DataContent data) {
-        this.data = data;
-    }
-
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public void setFinished(boolean finished) {
-        isFinished = finished;
-    }
-
-    public ResourceService getResourceService() {
-        return resourceService;
-    }
-
-    public DataContent getData() {
-        return data;
-    }
+//    public void setResourceService(ResourceService resourceService) {
+//        this.resourceService = resourceService;
+//    }
+//
+//    public void setData(DataContent data) {
+//        this.data = data;
+//    }
+//
+//
+//    public ResourceService getResourceService() {
+//        return resourceService;
+//    }
+//
+//    public DataContent getData() {
+//        return data;
+//    }
 
     public AsyncCallback getAsyncCallback() {
         return asyncCallback;
