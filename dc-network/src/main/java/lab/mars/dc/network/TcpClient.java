@@ -17,12 +17,14 @@ public class TcpClient extends TcpClientNetwork {
     private static final Logger LOG = LoggerFactory.getLogger(TcpClient.class);
 
     private LinkedList<RequestPacket> pendingQueue;
-
+    private SendThread sendThread;
     public TcpClient() {
         setSocketChannelChannelInitializer(new PacketClientChannelInitializer(
                 this));
     }
-
+    public TcpClient(SendThread sendThread){
+        this.sendThread=sendThread;
+    }
     public TcpClient(LinkedList<RequestPacket> m2mPacket) {
         this();
         this.pendingQueue = m2mPacket;
@@ -68,5 +70,9 @@ public class TcpClient extends TcpClientNetwork {
 
     public void setPendingQueue(LinkedList<RequestPacket> pendingQueue) {
         this.pendingQueue = pendingQueue;
+    }
+
+    public SendThread getSendThread() {
+        return sendThread;
     }
 }

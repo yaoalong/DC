@@ -3,6 +3,7 @@ package lab.mars.dc.network.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lab.mars.dc.RequestPacket;
+import lab.mars.dc.ResponsePacket;
 import lab.mars.dc.network.TcpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +33,14 @@ public class ClientChannelHandler extends
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
+
         try {
-            readResponse((RequestPacket) msg);
+            if (tcpClient.getSendThread() != null) {
+                tcpClient.getSendThread().readResponse((ResponsePacket) msg);
+            } else {
+                readResponse((RequestPacket) msg);
+            }
+
         } catch (IOException e) {
             LOG.error("channel read error:{}", e);
         }
@@ -44,15 +51,15 @@ public class ClientChannelHandler extends
         synchronized (tcpClient.getPendingQueue()) {
             if (tcpClient.getPendingQueue().size() == 0) {
                 throw new IOException("Nothing in the queue, but got "
-                       );
+                );
             }
             packet = tcpClient.getPendingQueue().remove();
             packet.setFinished(true);
             synchronized (packet) {
 //                packet.setM2mReplyHeader(m2mPacket.getM2mReplyHeader());
 //                packet.setResponse(m2mPacket.getResponse());
-                if(((RequestPacket)packet).getAsyncCallback()!=null){
-                    ((RequestPacket)packet).getAsyncCallback().processResult(null,null,null,null);
+                if (((RequestPacket) packet).getAsyncCallback() != null) {
+                    ((RequestPacket) packet).getAsyncCallback().processResult(null, null, null, null);
                 }
                 packet.notifyAll();
             }

@@ -9,5 +9,5 @@ import lab.mars.dc.loadbalance.LoadBalanceInterface;
  */
 public interface RegisterAndMonitor {
 
-    void register(String zooKeeperServer, String value, LoadBalanceInterface loadBalanceInterface);//TODO 后面加上负载均衡器
+    void register(String zooKeeperServer, String value, LoadBalanceInterface loadBalanceInterface);
 }
