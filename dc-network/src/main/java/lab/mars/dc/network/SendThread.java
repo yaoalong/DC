@@ -42,11 +42,9 @@ public class SendThread extends Thread {
                 }
                 DCPacket requestPacket = outgoingQueue.remove();
                 synchronized (pendingQueue) {
-                    System.out.println("加入了");
                     pendingQueue.add(requestPacket);
                 }
                 tcpClient.write(requestPacket);
-
             }
         }
     }

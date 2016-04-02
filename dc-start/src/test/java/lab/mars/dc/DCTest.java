@@ -1,6 +1,8 @@
 package lab.mars.dc;
 
+import lab.mars.dc.impl.LogResourceServiceImpl;
 import lab.mars.dc.network.SendThread;
+import lab.mars.dc.reflection.ResourceReflection;
 
 /**
  * Author:yaoalong.
@@ -12,7 +14,7 @@ public class DCTest {
     public void send(){
          DCPacket dcPacket=new DCPacket();
         RequestPacket requestPacket=new RequestPacket();
-        requestPacket.setId("111");
+        requestPacket.setId("11133");
         requestPacket.setAsyncCallback(new AsyncCallback() {
             /**
 			 *
@@ -24,6 +26,11 @@ public class DCTest {
                 System.out.println("ha");
             }
         });
+        LogResourceServiceImpl logResourceService=new LogResourceServiceImpl();
+        logResourceService.setId(1222);
+        byte[] bytes= ResourceReflection.serializeKryo(logResourceService);
+        requestPacket.setResourceService(bytes);
+        requestPacket.setOperateType(OperateType.SERVICE);
        dcPacket.setRequestPacket(requestPacket);
         sendThread.start();
         sendThread.send(dcPacket);

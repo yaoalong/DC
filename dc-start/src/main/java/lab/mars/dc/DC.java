@@ -12,6 +12,12 @@ import lab.mars.dc.network.TcpServer;
 public class DC {
 
     private TcpServer tcpServer;
+
+    public static void main(String args[]) {
+        DC dc = new DC();
+        dc.start(args);
+    }
+
     /**
      * 发送数据包的同步接口
      *
@@ -41,23 +47,20 @@ public class DC {
 
         DCConfig dcConfig = new DCConfig();
         dcConfig.parse(args[0]);
-        LoadBalanceConsistentHash loadBalanceConsistentHash=new LoadBalanceConsistentHash();
+        LoadBalanceConsistentHash loadBalanceConsistentHash = new LoadBalanceConsistentHash();
         loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
-        RegisterAndMonitorService registerableService=new RegisterAndMonitorService();
-        registerableService.register(dcConfig.zooKeeperServer,dcConfig.myIp+":"+dcConfig.port,loadBalanceConsistentHash);
-        tcpServer=new TcpServer(dcConfig.myIp+":"+dcConfig.port,dcConfig.numberOfViturlNodes,loadBalanceConsistentHash);
+        RegisterAndMonitorService registerableService = new RegisterAndMonitorService();
+        registerableService.register(dcConfig.zooKeeperServer, dcConfig.myIp + ":" + dcConfig.port, loadBalanceConsistentHash);
+        tcpServer = new TcpServer(dcConfig.myIp + ":" + dcConfig.port, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash);
         try {
-            tcpServer.bind(dcConfig.myIp,dcConfig.port);
+            tcpServer.bind(dcConfig.myIp, dcConfig.port);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
 
     }
-    public static void main(String args[]){
-        DC dc=new DC();
-        dc.start(args);
-    }
+
     public void shutDown() {
 
     }

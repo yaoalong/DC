@@ -20,11 +20,6 @@ public class Test {
         System.out.println("length:" + bytes.length);
 
         Person person = (Person) ResourceReflection.deserializeKryo(bytes);
-        if (person instanceof Woman) {
-            woman.say();
-        }
-        if (person instanceof Man) {
-            person.say();
-        }
+      person.say();
     }
 }
