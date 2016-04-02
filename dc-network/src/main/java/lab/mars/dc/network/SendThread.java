@@ -52,10 +52,11 @@ public class SendThread extends Thread {
             synchronized (pendingQueue){
                 System.out.println("Pending:"+pendingQueue.size());
                 DCPacket dcPacket1=pendingQueue.remove();
+                ResponsePacket responsePacket=dcPacket.getResponsePacket();
                 System.out.println("kankan"+dcPacket1.getRequestPacket().getAsyncCallback()==null);
                 if(dcPacket1.getRequestPacket().getAsyncCallback()!=null){
                     System.out.println("不为空");
-                    dcPacket1.getRequestPacket().getAsyncCallback().processResult(null,null,null,null);
+                    dcPacket1.getRequestPacket().getAsyncCallback().processResult(responsePacket.getCode(),null,null,null);
                 }
 
             }

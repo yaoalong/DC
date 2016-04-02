@@ -20,12 +20,9 @@ public class TcpClient extends TcpClientNetwork {
     private LinkedList<DCPacket> pendingQueue;
     private SendThread sendThread;
     public TcpClient() {
-    	this.pendingQueue=new LinkedList<DCPacket>();
+    	this.pendingQueue=new LinkedList<>();
         setSocketChannelChannelInitializer(new PacketClientChannelInitializer(
                 this));
-    }
-    public TcpClient(SendThread sendThread){
-        this.sendThread=sendThread;
     }
     public TcpClient(LinkedList<DCPacket> m2mPacket) {
         this();
@@ -64,16 +61,10 @@ public class TcpClient extends TcpClientNetwork {
         if(sendThread!=null){
             sendThread.readResponse((DCPacket)msg);
         }
-        System.out.println("返回");
-        return;
     }
 
     public LinkedList<DCPacket> getPendingQueue() {
         return pendingQueue;
-    }
-
-    public void setPendingQueue(LinkedList<DCPacket> pendingQueue) {
-        this.pendingQueue = pendingQueue;
     }
 
     public SendThread getSendThread() {

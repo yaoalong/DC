@@ -1,5 +1,6 @@
 package lab.mars.dc.persistence;
 
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.server.ResourceServiceDO;
 import org.junit.Test;
 
@@ -10,7 +11,7 @@ import org.junit.Test;
  */
 public class DCDatabaseCreateTest extends DCTestBase {
     @Test
-    public void testCreate() {
+    public void testCreate() throws DCException {
         for (int i = 10; i < 20; i++) {
             ResourceServiceDO resourceServiceDO = new ResourceServiceDO();
             resourceServiceDO.setData(("allen" + i).getBytes());

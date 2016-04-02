@@ -1,5 +1,6 @@
 package lab.mars.dc;
 
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.impl.LogResourceServiceImpl;
 import lab.mars.dc.network.SendThread;
 import lab.mars.dc.reflection.ResourceReflection;
@@ -22,8 +23,10 @@ public class DCTest {
 			private static final long serialVersionUID = -7737777178136621457L;
 
 			@Override
-            public void processResult(OperateResultCode operateResultCode, String id, ResultDO resultDO, ResourceService resourceService) {
-                System.out.println("ha");
+            public void processResult(DCException.Code code, String id, ResultDO resultDO, ResourceService resourceService) {
+
+
+                System.out.println("ha:"+code.getCode());
             }
         });
         LogResourceServiceImpl logResourceService=new LogResourceServiceImpl();

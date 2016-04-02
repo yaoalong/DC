@@ -4,8 +4,10 @@ import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.reflection.ResourceReflection;
 import lab.mars.dc.server.ResourceServiceDO;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,13 +15,15 @@ import java.util.List;
 import java.util.Map;
 
 import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
+import static lab.mars.dc.exception.DCException.Code.PARAM_ERROR;
+import static lab.mars.dc.exception.DCException.Code.RESOURCE_NOT_EXISTS;
 
 /**
  * Author:yaoalong.
  * Date:2016/3/31.
  * Email:yaoalong@foxmail.com
  */
-public class DCDatabaseImpl implements DCDatabaseInterface {
+public class DCDatabaseImpl implements DCDatabaseService {
     private String keyspace;
     private String table;
     private String node;
@@ -55,6 +59,19 @@ public class DCDatabaseImpl implements DCDatabaseInterface {
         }
     }
 
+    /**
+     * 参数校验
+     *
+     * @param resourceServiceDO
+     * @throws DCException
+     */
+    private void checkParam(ResourceServiceDO resourceServiceDO) throws DCException {
+
+        if (resourceServiceDO == null || resourceServiceDO.getId() == null || resourceServiceDO.getData() == null) {
+            throw new DCException(PARAM_ERROR);
+        }
+    }
+
     private QueryBuilder query() {
         return new QueryBuilder(cluster);
     }
@@ -79,7 +96,10 @@ public class DCDatabaseImpl implements DCDatabaseInterface {
     }
 
     @Override
-    public ResourceServiceDO retrieve(String id) {
+    public ResourceServiceDO retrieve(String id) throws DCException {
+        if (StringUtils.isBlank(id)) {
+            throw new DCException(PARAM_ERROR);
+        }
         try {
             Select.Selection selection = query().select();
             Select select = selection.from(keyspace, table);
@@ -102,17 +122,28 @@ public class DCDatabaseImpl implements DCDatabaseInterface {
     }
 
     @Override
-    public Long create(Object object) {
-        ResourceServiceDO m2mDataNode = (ResourceServiceDO) object;
-        Map<String, Object> map = ResourceReflection.serialize(m2mDataNode);
-        Insert insert = query().insertInto(keyspace, table);
-        map.forEach(insert::value);
-        session.execute(insert);
-        return 1L;
+    public Long create(ResourceServiceDO resourceServiceDO) throws DCException {
+        checkParam(resourceServiceDO);
+        try {
+            Map<String, Object> map = ResourceReflection.serialize(resourceServiceDO);
+            Insert insert = query().insertInto(keyspace, table);
+            map.forEach(insert::value);
+            session.execute(insert);
+            return 1L;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1L;
+        }
+
     }
 
     @Override
-    public Long delete(String id) {
+    public Long delete(String id) throws DCException {
+        ResourceServiceDO resourceServiceDO = retrieve(id);
+        if (resourceServiceDO == null) {
+            throw new DCException(RESOURCE_NOT_EXISTS, id);
+        }
+        checkParam(resourceServiceDO);
         try {
 
             Statement delete = query().delete().from(keyspace, table)
@@ -126,10 +157,14 @@ public class DCDatabaseImpl implements DCDatabaseInterface {
     }
 
     @Override
-    public Long update(String id, ResourceServiceDO resourceServiceDO) {
-        try {
-            ResourceServiceDO pre = retrieve(id);
+    public Long update(String id, ResourceServiceDO resourceServiceDO) throws DCException {
 
+        if (StringUtils.isBlank(id)) {
+            throw new DCException(PARAM_ERROR);
+        }
+        ResourceServiceDO pre = retrieve(id);
+        checkParam(pre);
+        try {
             delete(id);
             pre.setData(resourceServiceDO.getData());
             create(pre);

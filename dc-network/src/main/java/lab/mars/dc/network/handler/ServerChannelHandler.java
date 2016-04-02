@@ -3,12 +3,10 @@ package lab.mars.dc.network.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lab.mars.dc.DCPacket;
-import lab.mars.dc.RequestPacket;
 import lab.mars.dc.connectmanage.LRUManage;
-import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
 import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.network.TcpClient;
-import lag.mars.server.DCDatabase;
+import lab.mars.server.DCProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +29,13 @@ public class ServerChannelHandler extends
 
     private LRUManage lruManage;
 
-    private DCDatabase dcDatabase;
+    private DCProcessor dcProcessor;
 
-    public ServerChannelHandler(String self, LRUManage lruManage, LoadBalanceService loadBalanceService, DCDatabase dcDatabase) {
-    	this.self=self;
+    public ServerChannelHandler(String self, LRUManage lruManage, LoadBalanceService loadBalanceService, DCProcessor dcProcessor) {
+        this.self = self;
         this.lruManage = lruManage;
         this.loadBalanceService = loadBalanceService;
-        this.dcDatabase = dcDatabase;
+        this.dcProcessor = dcProcessor;
     }
 
     @Override
@@ -47,17 +45,7 @@ public class ServerChannelHandler extends
         DCPacket dcPacket = (DCPacket) msg;
         try {
             if (preProcessPacket(dcPacket, ctx)) {
-                dcDatabase.receiveMessage(dcPacket, ctx.channel());
-//                    M2mHandlerResult m2mHandlerResult = m2mHandler
-//                            .recv(m2mPacket);
-//
-//                    boolean isDistributed = m2mHandlerResult.isFlag();
-//                    if (isDistributed == true) {
-//                        NettyServerCnxn nettyServerCnxn = ctx.attr(STATE).get();
-//                        nettyServerCnxn.receiveMessage(ctx,
-//                                m2mHandlerResult.getM2mPacket());
-//                    }
-                //TODO 交给处理器进行处理
+                dcProcessor.receiveMessage(dcPacket, ctx.channel());
 
 
             } else {// 需要增加对错误的处理
@@ -95,6 +83,7 @@ public class ServerChannelHandler extends
 
     /**
      * 数据包的处理
+     *
      * @param dcPacket
      * @param ctx
      * @return

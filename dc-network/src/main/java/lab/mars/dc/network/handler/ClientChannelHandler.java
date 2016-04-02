@@ -36,18 +36,15 @@ public class ClientChannelHandler extends
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
 
         try {
-            if (tcpClient.getSendThread() != null) {
-                tcpClient.getSendThread().readResponse((DCPacket) msg);
-            } else {
                 readResponse((DCPacket) msg);
-            }
+
 
         } catch (IOException e) {
             LOG.error("channel read error:{}", e);
         }
     }
 
-    private void readResponse(DCPacket m2mPacket) throws IOException {
+    private void readResponse(DCPacket dcPacket) throws IOException {
         DCPacket packet;
         synchronized (tcpClient.getPendingQueue()) {
             if (tcpClient.getPendingQueue().size() == 0) {
@@ -57,9 +54,8 @@ public class ClientChannelHandler extends
             packet = tcpClient.getPendingQueue().remove();
             packet.setFinished(true);
             synchronized (packet) {
-                System.out.println("很共");
-//                packet.setM2mReplyHeader(m2mPacket.getM2mReplyHeader());
-//                packet.setResponse(m2mPacket.getResponse());
+                System.out.println("XX"+dcPacket.getResponsePacket().getCode());
+                packet.setResponsePacket(dcPacket.getResponsePacket());
                 packet.notifyAll();
             }
 

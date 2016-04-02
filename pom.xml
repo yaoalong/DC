@@ -45,6 +45,7 @@
         <maven.source.plugin.version>2.4</maven.source.plugin.version>
         <netty.version>4.0.30.Final</netty.version>
         <zookeeper.version>3.4.6</zookeeper.version>
+        <commons-lang3.version>3.4</commons-lang3.version>
     </properties>
     <dependencyManagement>
 
@@ -97,6 +98,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

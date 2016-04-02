@@ -1,5 +1,7 @@
 package lab.mars.dc;
 
+import lab.mars.dc.exception.DCException;
+
 import java.io.Serializable;
 
 /**
@@ -22,10 +24,10 @@ public class ResponsePacket implements Serializable{
      * resourceService，当操作码为检索的时候，用来返回具体的resourceService
      */
     private String id;
-    private OperateResultCode operateResultCode;
+    private DCException.Code code;
     private ResultDO result;
 
-    private ResourceService resourceService;
+    private byte[] resourceService;
     public String getId() {
         return id;
     }
@@ -34,12 +36,12 @@ public class ResponsePacket implements Serializable{
         this.id = id;
     }
 
-    public OperateResultCode getOperateResultCode() {
-        return operateResultCode;
+    public DCException.Code getCode() {
+        return code;
     }
 
-    public void setOperateResultCode(OperateResultCode operateResultCode) {
-        this.operateResultCode = operateResultCode;
+    public void setCode(DCException.Code code) {
+        this.code = code;
     }
 
     public ResultDO getResult() {
@@ -50,11 +52,11 @@ public class ResponsePacket implements Serializable{
         this.result = result;
     }
 
-    public ResourceService getResourceService() {
+    public byte[] getResourceService() {
         return resourceService;
     }
 
-    public void setResourceService(ResourceService resourceService) {
+    public void setResourceService(byte[] resourceService) {
         this.resourceService = resourceService;
     }
 }

@@ -1,5 +1,6 @@
 package lab.mars.dc.persistence;
 
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.server.ResourceServiceDO;
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +16,7 @@ public class DCTestBase {
     protected DCDatabaseImpl dcDatabase;
 
     @Before
-    public void before() {
+    public void before() throws DCException {
 
         dcDatabase = new DCDatabaseImpl(true, "tests", "dc", "192.168.10.124");
         for (int i = 0; i < 10; i++) {

@@ -1,5 +1,6 @@
 package lab.mars.dc.persistence;
 
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.server.ResourceServiceDO;
 import org.junit.Test;
 
@@ -11,7 +12,7 @@ import org.junit.Test;
 public class DCDatabaseUpdateTest  extends  DCTestBase{
 
     @Test
-    public void test(){
+    public void test() throws DCException {
         for(int i=0;i<10;i++){
             ResourceServiceDO resourceServiceDO=new ResourceServiceDO();
             resourceServiceDO.setId(i+"");
