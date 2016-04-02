@@ -6,7 +6,7 @@ import lab.mars.dc.DCPacket;
 import lab.mars.dc.RequestPacket;
 import lab.mars.dc.connectmanage.LRUManage;
 import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
-import lab.mars.dc.loadbalance.LoadBalanceInterface;
+import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.network.TcpClient;
 import lag.mars.server.DCDatabase;
 import org.slf4j.Logger;
@@ -27,16 +27,16 @@ public class ServerChannelHandler extends
     private final LinkedList<DCPacket> pendingQueue = new LinkedList<DCPacket>();
     private ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
     private String self;
-    private LoadBalanceInterface loadBalanceInterface;
+    private LoadBalanceService loadBalanceService;
 
     private LRUManage lruManage;
 
     private DCDatabase dcDatabase;
 
-    public ServerChannelHandler(String self,LRUManage lruManage, LoadBalanceInterface loadBalanceInterface, DCDatabase dcDatabase) {
+    public ServerChannelHandler(String self, LRUManage lruManage, LoadBalanceService loadBalanceService, DCDatabase dcDatabase) {
     	this.self=self;
         this.lruManage = lruManage;
-        this.loadBalanceInterface = loadBalanceInterface;
+        this.loadBalanceService = loadBalanceService;
         this.dcDatabase = dcDatabase;
     }
 
@@ -104,7 +104,7 @@ public class ServerChannelHandler extends
         String key = dcPacket.getRequestPacket().getId();
 
 
-        String server = loadBalanceInterface.getServer(key);
+        String server = loadBalanceService.getServer(key);
         if (server.equals(self)) {
             return true;
         }

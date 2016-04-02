@@ -1,7 +1,7 @@
 package lab.mars.dc.network;
 
 import lab.mars.dc.connectmanage.LRUManage;
-import lab.mars.dc.loadbalance.LoadBalanceInterface;
+import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.network.initializer.PacketServerChannelInitializer;
 import lab.mars.dc.persistence.DCDatabaseImpl;
 import lag.mars.server.DCDatabase;
@@ -13,11 +13,11 @@ import lag.mars.server.DCDatabase;
  */
 public class TcpServer extends TcpServerNetwork {
 
-    public TcpServer(String self,Integer numberOfConnections, LoadBalanceInterface  loadBalanceInterface) {
+    public TcpServer(String self,Integer numberOfConnections, LoadBalanceService  loadBalanceService) {
     	System.out.println("GG"+numberOfConnections);
     	LRUManage lruManage=new LRUManage(numberOfConnections);
         setChannelChannelInitializer(new PacketServerChannelInitializer(self,
-        		lruManage,loadBalanceInterface,new DCDatabase(new DCDatabaseImpl())));
+        		lruManage,loadBalanceService,new DCDatabase(new DCDatabaseImpl())));
 
     }
 

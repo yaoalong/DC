@@ -1,6 +1,6 @@
 package lab.mars.dc.collaboration;
 
-import lab.mars.dc.loadbalance.LoadBalanceInterface;
+import lab.mars.dc.loadbalance.LoadBalanceService;
 
 /**
  * Author:yaoalong.
@@ -9,5 +9,5 @@ import lab.mars.dc.loadbalance.LoadBalanceInterface;
  */
 public interface RegisterAndMonitor {
 
-    void register(String zooKeeperServer, String value, LoadBalanceInterface loadBalanceInterface);
+    void register(String zooKeeperServer, String value, LoadBalanceService loadBalanceInterface);
 }

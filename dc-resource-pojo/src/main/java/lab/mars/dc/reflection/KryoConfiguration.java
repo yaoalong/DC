@@ -3,6 +3,7 @@ package lab.mars.dc.reflection;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.esotericsoftware.reflectasm.FieldAccess;
+import lab.mars.dc.impl.LogResourceServiceImpl;
 import lab.mars.dc.server.ResourceServiceDO;
 
 import java.lang.reflect.Field;
@@ -31,7 +32,7 @@ public class KryoConfiguration {
         Set<Class> seedClz = new HashSet<>();
         // main resource element in data base
         seedClz.add(ResourceServiceDO.class);
-
+        seedClz.add(LogResourceServiceImpl.class);
         for (Class clz : seedClz) {
             fieldAccessMap.put(clz, new ClassAccess(clz));
         }

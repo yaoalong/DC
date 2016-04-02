@@ -20,6 +20,7 @@ public class SendThread extends Thread {
 
     public SendThread() {
         tcpClient.connectionOne("192.168.10.131", 2181);
+        tcpClient.setSendThread(this);
     }
 
     public void send(DCPacket dcPacket) {
@@ -40,15 +41,18 @@ public class SendThread extends Thread {
                     }
                 }
                 DCPacket requestPacket = outgoingQueue.remove();
-                tcpClient.write(requestPacket);
                 synchronized (pendingQueue) {
+                    System.out.println("加入了");
                     pendingQueue.add(requestPacket);
                 }
+                tcpClient.write(requestPacket);
+
             }
         }
     }
     public void readResponse(DCPacket dcPacket){
             synchronized (pendingQueue){
+                System.out.println("Pending:"+pendingQueue.size());
                 DCPacket dcPacket1=pendingQueue.remove();
                 System.out.println("kankan"+dcPacket1.getRequestPacket().getAsyncCallback()==null);
                 if(dcPacket1.getRequestPacket().getAsyncCallback()!=null){

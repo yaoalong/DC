@@ -14,7 +14,7 @@ import java.util.TreeMap;
  * Date:2016/3/30.
  * Email:yaoalong@foxmail.com
  */
-public class LoadBalanceConsistentHash implements LoadBalanceInterface {
+public class LoadBalanceConsistentHash implements LoadBalanceService {
     private static Logger LOG = LoggerFactory.getLogger(LoadBalanceConsistentHash.class);
     private static ThreadLocal<MessageDigest> MD5 = new ThreadLocal<MessageDigest>() {
         @Override

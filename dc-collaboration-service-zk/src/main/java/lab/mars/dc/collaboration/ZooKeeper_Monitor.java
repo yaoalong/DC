@@ -1,6 +1,6 @@
 package lab.mars.dc.collaboration;
 
-import lab.mars.dc.loadbalance.LoadBalanceInterface;
+import lab.mars.dc.loadbalance.LoadBalanceService;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -27,7 +27,7 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
      * zooKeeper服务器的地址
      */
     private String server;
-    private LoadBalanceInterface loadBalanceInterface;
+    private LoadBalanceService loadBalanceService;
 
     public void run() {
         try {
@@ -76,8 +76,8 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
             return;
         }
         List<String> serverStrings = zooKeeper.getChildren(ROOT_NODE, null);
-        loadBalanceInterface.setServers(serverStrings);
-        loadBalanceInterface.initialize();
+        loadBalanceService.setServers(serverStrings);
+        loadBalanceService.initialize();
 
     }
 
@@ -89,8 +89,8 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
         this.server = server;
     }
 
-    public void setLoadBalanceInterface(LoadBalanceInterface loadBalanceInterface) {
-        this.loadBalanceInterface = loadBalanceInterface;
+    public void setLoadBalanceService(LoadBalanceService loadBalanceService) {
+        this.loadBalanceService = loadBalanceService;
     }
 
 }

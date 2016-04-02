@@ -60,9 +60,11 @@ public class TcpClient extends TcpClientNetwork {
                     e.printStackTrace();
                 }
             }
-
-
         }
+        if(sendThread!=null){
+            sendThread.readResponse((DCPacket)msg);
+        }
+        System.out.println("返回");
         return;
     }
 
@@ -76,5 +78,9 @@ public class TcpClient extends TcpClientNetwork {
 
     public SendThread getSendThread() {
         return sendThread;
+    }
+
+    public void setSendThread(SendThread sendThread) {
+        this.sendThread = sendThread;
     }
 }

@@ -13,17 +13,17 @@ public class DCTest {
          DCPacket dcPacket=new DCPacket();
         RequestPacket requestPacket=new RequestPacket();
         requestPacket.setId("111");
-//        requestPacket.setAsyncCallback(new AsyncCallback() {
-//            /**
-//			 * 
-//			 */
-//			private static final long serialVersionUID = -7737777178136621457L;
-//
-//			@Override
-//            public void processResult(OperateResultCode operateResultCode, String id, ResultDO resultDO, ResourceService resourceService) {
-//                System.out.println("ha");
-//            }
-//        });
+        requestPacket.setAsyncCallback(new AsyncCallback() {
+            /**
+			 *
+			 */
+			private static final long serialVersionUID = -7737777178136621457L;
+
+			@Override
+            public void processResult(OperateResultCode operateResultCode, String id, ResultDO resultDO, ResourceService resourceService) {
+                System.out.println("ha");
+            }
+        });
        dcPacket.setRequestPacket(requestPacket);
         sendThread.start();
         sendThread.send(dcPacket);

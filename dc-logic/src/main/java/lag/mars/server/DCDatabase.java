@@ -52,7 +52,8 @@ public class DCDatabase {
 //        } else if (requestPacket.getOperateType().getCode() == OperateType.RETRIEVE.getCode()) {
 //            dcDatabaseInterface.retrieve(requestPacket.getId());
 //        }
-        channel.write(new DCPacket());
+        channel.writeAndFlush(new DCPacket());
+        System.out.println("OKI");
     }
 
 }

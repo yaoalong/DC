@@ -7,7 +7,7 @@ import java.util.List;
  * Date:2016/3/3.
  * Email:yaoalong@foxmail.com
  */
-public interface LoadBalanceInterface {
+public interface LoadBalanceService {
 
     void initialize();
 

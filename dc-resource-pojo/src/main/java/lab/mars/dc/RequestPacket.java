@@ -24,7 +24,7 @@ public class RequestPacket implements Serializable{
 
   //  private DataContent data;
 
-    private AsyncCallback asyncCallback;
+    private  transient  AsyncCallback asyncCallback;
     public String getId() {
         return id;
     }

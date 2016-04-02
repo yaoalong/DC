@@ -1,6 +1,6 @@
 package lab.mars.dc.collaboration;
 
-import lab.mars.dc.loadbalance.LoadBalanceInterface;
+import lab.mars.dc.loadbalance.LoadBalanceService;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.io.IOException;
 public class RegisterAndMonitorService implements RegisterAndMonitor {
 
     @Override
-    public void register(String zooKeeperServer, String value, LoadBalanceInterface loadBalanceInterface) {
+    public void register(String zooKeeperServer, String value, LoadBalanceService loadBalanceService) {
         RegisterIntoZooKeeper registerIntoZooKeeper = new RegisterIntoZooKeeper();
         registerIntoZooKeeper.setServer(zooKeeperServer);
 
@@ -21,7 +21,7 @@ public class RegisterAndMonitorService implements RegisterAndMonitor {
             registerIntoZooKeeper.register(value);
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (KeeperException e) {
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class RegisterAndMonitorService implements RegisterAndMonitor {
 
         ZooKeeper_Monitor zooKeeper_monitor = new ZooKeeper_Monitor();
         zooKeeper_monitor.setServer(zooKeeperServer);
-        zooKeeper_monitor.setLoadBalanceInterface(loadBalanceInterface);
+        zooKeeper_monitor.setLoadBalanceService(loadBalanceService);
         zooKeeper_monitor.start();
 
     }
