@@ -38,9 +38,11 @@ public class DC {
      * @param args
      */
     public void start(String args[]) {
-        LoadBalanceConsistentHash loadBalanceConsistentHash=new LoadBalanceConsistentHash();
+
         DCConfig dcConfig = new DCConfig();
         dcConfig.parse(args[0]);
+        LoadBalanceConsistentHash loadBalanceConsistentHash=new LoadBalanceConsistentHash();
+        loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
         RegisterAndMonitorService registerableService=new RegisterAndMonitorService();
         registerableService.register(dcConfig.zooKeeperServer,dcConfig.myIp+":"+dcConfig.port,loadBalanceConsistentHash);
         tcpServer=new TcpServer(dcConfig.myIp+":"+dcConfig.port,dcConfig.numberOfViturlNodes,loadBalanceConsistentHash);
