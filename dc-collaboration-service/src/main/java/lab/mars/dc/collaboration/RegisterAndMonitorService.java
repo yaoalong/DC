@@ -7,7 +7,7 @@ import lab.mars.dc.loadbalance.LoadBalanceService;
  * Date:2016/3/30.
  * Email:yaoalong@foxmail.com
  */
-public interface RegisterAndMonitor {
+public interface RegisterAndMonitorService {
 
-    void register(String zooKeeperServer, String value, LoadBalanceService loadBalanceInterface);
+    void register(String zooKeeperServer, String value, LoadBalanceService loadBalanceService);
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
  * Date:2016/3/30.
  * Email:yaoalong@foxmail.com
  */
-public class RegisterAndMonitorService implements RegisterAndMonitor {
+public class ZKRegisterAndMonitorService implements RegisterAndMonitorService {
 
     @Override
     public void register(String zooKeeperServer, String value, LoadBalanceService loadBalanceService) {

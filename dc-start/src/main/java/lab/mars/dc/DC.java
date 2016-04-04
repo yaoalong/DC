@@ -1,7 +1,8 @@
 package lab.mars.dc;
 
-import lab.mars.dc.collaboration.RegisterAndMonitorService;
+import lab.mars.dc.collaboration.ZKRegisterAndMonitorService;
 import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
+import lab.mars.dc.network.SendThread;
 import lab.mars.dc.network.TcpServer;
 
 /**
@@ -12,6 +13,11 @@ import lab.mars.dc.network.TcpServer;
 public class DC {
 
     private TcpServer tcpServer;
+
+
+    private SendThread sendThread;
+
+    private volatile boolean isStart = false;
 
     public static void main(String args[]) {
         DC dc = new DC();
@@ -35,7 +41,17 @@ public class DC {
      * @param asyncCallback
      */
     public void send(RequestPacket requestPacket, AsyncCallback asyncCallback) {
-
+        while (!isStart) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        DCPacket dcPacket = new DCPacket();
+        requestPacket.setAsyncCallback(asyncCallback);
+        dcPacket.setRequestPacket(requestPacket);
+        sendThread.send(dcPacket);
     }
 
     /**
@@ -49,19 +65,24 @@ public class DC {
         dcConfig.parse(args[0]);
         LoadBalanceConsistentHash loadBalanceConsistentHash = new LoadBalanceConsistentHash();
         loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
-        RegisterAndMonitorService registerableService = new RegisterAndMonitorService();
+        ZKRegisterAndMonitorService registerableService = new ZKRegisterAndMonitorService();
         registerableService.register(dcConfig.zooKeeperServer, dcConfig.myIp + ":" + dcConfig.port, loadBalanceConsistentHash);
         tcpServer = new TcpServer(dcConfig.myIp + ":" + dcConfig.port, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash);
+
+
         try {
             tcpServer.bind(dcConfig.myIp, dcConfig.port);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
+        sendThread.start();
+        isStart = true;
 
     }
 
     public void shutDown() {
-
+        isStart = false;
+        tcpServer.close();
     }
 }

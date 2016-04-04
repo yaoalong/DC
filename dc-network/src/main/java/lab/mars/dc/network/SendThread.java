@@ -18,8 +18,8 @@ public class SendThread extends Thread {
     private final LinkedList<DCPacket> outgoingQueue = new LinkedList<DCPacket>();
     private TcpClient tcpClient = new TcpClient();
 
-    public SendThread() {
-        tcpClient.connectionOne("192.168.10.131", 2181);
+    public SendThread(String serverIp,Integer port) {
+        tcpClient.connectionOne(serverIp, port);
         tcpClient.setSendThread(this);
     }
 
@@ -55,7 +55,6 @@ public class SendThread extends Thread {
                 ResponsePacket responsePacket=dcPacket.getResponsePacket();
                 System.out.println("kankan"+dcPacket1.getRequestPacket().getAsyncCallback()==null);
                 if(dcPacket1.getRequestPacket().getAsyncCallback()!=null){
-                    System.out.println("不为空");
                     dcPacket1.getRequestPacket().getAsyncCallback().processResult(responsePacket.getCode(),null,null,null);
                 }
 
