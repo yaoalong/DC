@@ -1,8 +1,7 @@
 package lab.mars.dc.network;
 
-import lab.mars.dc.DCPacket;
-import lab.mars.dc.RequestPacket;
-import lab.mars.dc.ResponsePacket;
+import lab.mars.dc.*;
+import lab.mars.dc.reflection.ResourceReflection;
 
 import java.util.LinkedList;
 
@@ -18,7 +17,7 @@ public class SendThread extends Thread {
     private final LinkedList<DCPacket> outgoingQueue = new LinkedList<DCPacket>();
     private TcpClient tcpClient = new TcpClient();
 
-    public SendThread(String serverIp,Integer port) {
+    public SendThread(String serverIp, Integer port) {
         tcpClient.connectionOne(serverIp, port);
         tcpClient.setSendThread(this);
     }
@@ -48,16 +47,29 @@ public class SendThread extends Thread {
             }
         }
     }
-    public void readResponse(DCPacket dcPacket){
-            synchronized (pendingQueue){
-                System.out.println("Pending:"+pendingQueue.size());
-                DCPacket dcPacket1=pendingQueue.remove();
-                ResponsePacket responsePacket=dcPacket.getResponsePacket();
-                System.out.println("kankan"+dcPacket1.getRequestPacket().getAsyncCallback()==null);
-                if(dcPacket1.getRequestPacket().getAsyncCallback()!=null){
-                    dcPacket1.getRequestPacket().getAsyncCallback().processResult(responsePacket.getCode(),null,null,null);
-                }
 
+    public void readResponse(DCPacket dcPacket) {
+        synchronized (pendingQueue) {
+            System.out.println("Pending:" + pendingQueue.size());
+            DCPacket dcPacket1 = pendingQueue.remove();
+            ResponsePacket responsePacket = dcPacket.getResponsePacket();
+            System.out.println("kankan" + dcPacket1.getRequestPacket().getAsyncCallback() == null);
+            if (dcPacket1.getRequestPacket().getAsyncCallback() != null) {
+
+                if (dcPacket1.getRequestPacket().getOperateType() == OperateType.CREATE || dcPacket1.getRequestPacket().getOperateType() == OperateType.DELETE || dcPacket1.getRequestPacket().getOperateType() == OperateType.UPDATE) {
+                    AsyncCallback.VoidCallback voidCallback = (AsyncCallback.VoidCallback) dcPacket1.getRequestPacket().getAsyncCallback();
+                    voidCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId());
+                } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.RETRIEVE) {
+                    AsyncCallback.DataCallback dataCallback = (AsyncCallback.DataCallback) dcPacket1.getRequestPacket().getAsyncCallback();
+                    ResourceService resourceService = (ResourceService) ResourceReflection.deserializeKryo(responsePacket.getResourceService());
+                    dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
+                } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.SERVICE) {
+                    AsyncCallback.ServiceCallback serviceCallback = (AsyncCallback.ServiceCallback) dcPacket1.getRequestPacket().getAsyncCallback();
+
+                    serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), responsePacket.getResult());
+                }
             }
+
+        }
     }
 }
