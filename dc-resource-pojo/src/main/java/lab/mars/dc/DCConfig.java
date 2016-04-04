@@ -21,7 +21,7 @@ public class DCConfig {
     protected Integer port;
 
     protected  Integer numberOfViturlNodes;
-    public void parse(String path) {
+    public void parse(String path) throws ConfigException {
         File configFile = new File(path);
 
         LOG.info("Reading configuration from: " + configFile);
@@ -41,7 +41,11 @@ public class DCConfig {
             }
 
             parseProperties(cfg);
-        } catch (Exception e) {
+        }catch (IllegalArgumentException e){
+
+            throw new ConfigException("Error processing "+path,e);
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -60,8 +64,31 @@ public class DCConfig {
             else if(key.equals("numOfVirtualNodes")){
                 numberOfViturlNodes=Integer.valueOf(value);
             }
+            else{
+                System.setProperty("dc."+key,value);
+            }
+
+        }
+        if(zooKeeperServer==null){
+            throw  new IllegalArgumentException("zooKeeperServer is not set");
+        }
+        if(myIp==null){
+            throw  new IllegalArgumentException("myIp is not set");
+        }
+        if(port==null){
+            throw new IllegalArgumentException("port is not set");
         }
     }
+    public static class ConfigException extends Exception {
+        public ConfigException(String msg) {
+            super(msg);
+        }
+
+        public ConfigException(String msg, Exception e) {
+            super(msg, e);
+        }
+    }
+
 }
 
 

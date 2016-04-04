@@ -124,6 +124,10 @@ public class DCDatabaseImpl implements DCDatabaseService {
     @Override
     public Long create(ResourceServiceDO resourceServiceDO) throws DCException {
         checkParam(resourceServiceDO);
+        ResourceServiceDO serviceDO=retrieve(resourceServiceDO.getId());
+        if(serviceDO!=null){
+            throw new DCException(DCException.Code.RESOURCE_EXISTS,resourceServiceDO.getId());
+        }
         try {
             Map<String, Object> map = ResourceReflection.serialize(resourceServiceDO);
             Insert insert = query().insertInto(keyspace, table);

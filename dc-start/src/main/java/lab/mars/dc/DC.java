@@ -4,6 +4,9 @@ import lab.mars.dc.collaboration.ZKRegisterAndMonitorService;
 import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
 import lab.mars.dc.network.SendThread;
 import lab.mars.dc.network.TcpServer;
+import lab.mars.dc.persistence.DCDatabaseImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author:yaoalong.
@@ -12,6 +15,8 @@ import lab.mars.dc.network.TcpServer;
  */
 public class DC {
 
+
+    private static final Logger LOG = LoggerFactory.getLogger(DC.class);
     private TcpServer tcpServer;
 
 
@@ -21,7 +26,17 @@ public class DC {
 
     public static void main(String args[]) {
         DC dc = new DC();
-        dc.start(args);
+        try {
+            dc.start(args);
+        } catch (DCConfig.ConfigException e) {
+            LOG.error("Invalid config, exiting abnormally", e);
+            System.err.println("Invalid config, exiting abnormally");
+            System.exit(2);
+        } catch (Exception e) {
+            LOG.error("Unexpected exception, exiting abnormally", e);
+            System.exit(1);
+        }
+
     }
 
     /**
@@ -59,15 +74,18 @@ public class DC {
      *
      * @param args
      */
-    public void start(String args[]) {
-
+    public void start(String args[]) throws DCConfig.ConfigException {
+        if (args.length != 1) {
+            LOG.error("no config file");
+            System.exit(-1);
+        }
         DCConfig dcConfig = new DCConfig();
         dcConfig.parse(args[0]);
         LoadBalanceConsistentHash loadBalanceConsistentHash = new LoadBalanceConsistentHash();
         loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
-        ZKRegisterAndMonitorService registerableService = new ZKRegisterAndMonitorService();
-        registerableService.register(dcConfig.zooKeeperServer, dcConfig.myIp + ":" + dcConfig.port, loadBalanceConsistentHash);
-        tcpServer = new TcpServer(dcConfig.myIp + ":" + dcConfig.port, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash);
+        ZKRegisterAndMonitorService registerAndMonitorService = new ZKRegisterAndMonitorService();
+        registerAndMonitorService.register(dcConfig.zooKeeperServer, dcConfig.myIp + ":" + dcConfig.port, loadBalanceConsistentHash);
+        tcpServer = new TcpServer(dcConfig.myIp + ":" + dcConfig.port, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash, new DCDatabaseImpl());
 
 
         try {

@@ -1,6 +1,6 @@
 package lab.mars.dc;
 
-import lab.mars.dc.exception.DCException;
+import lab.mars.dc.exception.DCException.Code;
 
 import java.io.Serializable;
 /**
@@ -16,5 +16,5 @@ import java.io.Serializable;
 
 public interface AsyncCallback extends Serializable {
 
-    void processResult(DCException.Code code, String id, ResultDO resultDO, ResourceService resourceService);
+    void processResult(Code code, String id, ResultDO resultDO, ResourceService resourceService);
 }
