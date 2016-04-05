@@ -26,12 +26,12 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
     /*
      * zooKeeper服务器的地址
      */
-    private String server;
+    private String zooKeeperServer;
     private LoadBalanceService loadBalanceService;
 
     public void run() {
         try {
-            zooKeeper = new ZooKeeper(server, 5000, this);
+            zooKeeper = new ZooKeeper(zooKeeperServer, 5000, this);
             countDownLatch.await();
             getChildrens();
 
@@ -78,18 +78,13 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
         }
 
         List<String> serverStrings = zooKeeper.getChildren(ROOT_NODE, this);
-        System.out.println("set servers");
-        serverStrings.forEach(t->{
-            System.out.println("server:"+t);
-        });
         loadBalanceService.setServers(serverStrings);
-        loadBalanceService.initialize();
 
     }
 
 
-    public void setServer(String server) {
-        this.server = server;
+    public void setZooKeeperServer(String zooKeeperServer) {
+        this.zooKeeperServer = zooKeeperServer;
     }
 
     public void setLoadBalanceService(LoadBalanceService loadBalanceService) {

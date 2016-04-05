@@ -12,6 +12,8 @@ import java.util.Map;
  */
 public class LRUManage implements ConnectManager {
     private int size = 16;
+    
+    
     /**
      * 利用了LinkedHashMap实现了LRU 连接池
      */

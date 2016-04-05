@@ -11,5 +11,7 @@
 
     <artifactId>dc-loadbalance-interface</artifactId>
 
+<dependencies>
 
+</dependencies>
 </project>

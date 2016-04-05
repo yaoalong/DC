@@ -9,7 +9,6 @@ import java.util.List;
  */
 public interface LoadBalanceService {
 
-    void initialize();
 
     void setServers(List<String> servers);
 

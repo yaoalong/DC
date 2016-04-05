@@ -11,6 +11,8 @@ import lab.mars.dc.reflection.ResourceReflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashSet;
+
 /**
  * Author:yaoalong.
  * Date:2016/3/25.
@@ -52,7 +54,7 @@ public class DC {
 
     public static RequestPacket generateDCRequestPacket() {
         RequestPacket requestPacket = new RequestPacket();
-        requestPacket.setId("11133");
+      //  requestPacket.setId("11133");
 
         LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
         logResourceService.setId(1222);
@@ -129,5 +131,6 @@ public class DC {
     public void shutDown() {
         isStart = false;
         tcpServer.close();
+
     }
 }

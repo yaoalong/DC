@@ -3,10 +3,13 @@ package lab.mars.dc.network.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lab.mars.dc.DCPacket;
+import lab.mars.dc.ResponsePacket;
 import lab.mars.dc.connectmanage.LRUManage;
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.network.TcpClient;
 import lab.mars.server.DCProcessor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +51,17 @@ public class ServerChannelHandler extends
                 dcProcessor.receiveMessage(dcPacket, ctx.channel());
 
 
-            } else {// 需要增加对错误的处理
-
             }
-        } catch (Exception e) {
+        }
+        catch (DCException e){
+            DCException.Code code=e.getCode();
+            ResponsePacket responsePacket=new ResponsePacket();
+            responsePacket.setCode(code);
+            DCPacket result=new DCPacket();
+            result.setResponsePacket(responsePacket);
+            ctx.writeAndFlush(result);
+        }
+        catch (Exception e) {
 //            M2mReplyHeader m2mReplyHeader = new M2mReplyHeader(0, 0,
 //                    e.getCode());
 //            M2mRecord m2mRecord = null;
@@ -89,7 +99,10 @@ public class ServerChannelHandler extends
      * @return
      */
     public boolean preProcessPacket(DCPacket dcPacket,
-                                    ChannelHandlerContext ctx) {
+                                    ChannelHandlerContext ctx) throws DCException {
+        if(dcPacket==null||dcPacket.getRequestPacket()==null|| StringUtils.isBlank(dcPacket.getRequestPacket().getId())){
+            throw new DCException(DCException.Code.PARAM_ERROR);
+        }
         String key = dcPacket.getRequestPacket().getId();
 
 

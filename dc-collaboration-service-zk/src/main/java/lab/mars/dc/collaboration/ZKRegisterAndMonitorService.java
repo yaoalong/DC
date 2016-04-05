@@ -36,7 +36,7 @@ public class ZKRegisterAndMonitorService implements RegisterAndMonitorService {
         }
 
         ZooKeeper_Monitor zooKeeper_monitor = new ZooKeeper_Monitor();
-        zooKeeper_monitor.setServer(zooKeeperServer);
+        zooKeeper_monitor.setZooKeeperServer(zooKeeperServer);
         zooKeeper_monitor.setLoadBalanceService(loadBalanceService);
         zooKeeper_monitor.start();
 

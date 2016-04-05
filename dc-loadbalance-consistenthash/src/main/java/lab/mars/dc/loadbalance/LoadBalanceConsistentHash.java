@@ -31,7 +31,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     private int numOfVirtualNode = 1;
     private List<String> servers;
     private volatile boolean initialized = false;
-    private TreeMap<Long, String> consistentBuckets;
+    private TreeMap<Long, String> consistentBuckets=new TreeMap<>();
 
     /**
      * 计算一个key的hash值
@@ -50,29 +50,14 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
         return res;
     }
 
-    public void initialize() {
-        try {
-
-            // if servers is not set, or it empty, then
-            // throw a runtime exception
-            if (servers == null || servers.size() <= 0) {
-                if (LOG.isErrorEnabled())
-                    LOG.error("++++ trying to initialize with no servers");
-                throw new IllegalStateException(
-                        "++++ trying to initialize with no servers");
-            }
-
-            // only create up to maxCreate connections at once
-
-            // initalize our internal hashing structures
-            populateConsistentBuckets();
-        } catch (Exception ex) {
-            LOG.error("error occur:{}", ex.getMessage());
-        }
-    }
 
     public void populateConsistentBuckets() {
-
+        if (servers == null || servers.size() <= 0) {
+            if (LOG.isErrorEnabled())
+                LOG.error("++++ trying to initialize with no servers");
+            throw new IllegalStateException(
+                    "++++ trying to initialize with no servers");
+        }
         this.consistentBuckets = getConsistentBuckets(servers);
         initialized = true;
     }
@@ -95,31 +80,39 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
         }
         return newConsistentBuckets;
     }
-
+@Override
     public void setServers(List<String> servers) {
+
         this.servers = servers;
+        synchronized (consistentBuckets) {
+            populateConsistentBuckets();
+        }
+
     }
 
     public void setNumOfVirtualNode(Integer numOfVirtualNode) {
-    this.numOfVirtualNode=numOfVirtualNode;
+        this.numOfVirtualNode = numOfVirtualNode;
     }
 
     public String getServer(String key) {
 
-        return consistentBuckets.get(getBucket(key));
+        synchronized (consistentBuckets) {
+            return consistentBuckets.get(getBucket(key));
+        }
+
     }
+
     private final long getBucket(String key) {
         long hc = md5HashingAlg(key);
         long result = findPointFor(hc);
         return result;
     }
-    private final Long findPointFor(Long hv) {
-        synchronized (this.consistentBuckets) {
-            SortedMap<Long, String> tmap = this.consistentBuckets.tailMap(hv);
 
-            return (tmap.isEmpty()) ? this.consistentBuckets.firstKey() : tmap
-                    .firstKey();
-        }
+    private final Long findPointFor(Long hv) {
+        SortedMap<Long, String> tmap = this.consistentBuckets.tailMap(hv);
+
+        return (tmap.isEmpty()) ? this.consistentBuckets.firstKey() : tmap
+                .firstKey();
 
     }
 }
