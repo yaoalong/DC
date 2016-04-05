@@ -13,18 +13,21 @@ import java.util.LinkedList;
 public class SendThread extends Thread {
 
 
-    private final LinkedList<DCPacket> pendingQueue = new LinkedList<DCPacket>();
-    private final LinkedList<DCPacket> outgoingQueue = new LinkedList<DCPacket>();
+    private final LinkedList<DCPacket> pendingQueue ;
+    private final LinkedList<DCPacket> outgoingQueue;
     private TcpClient tcpClient = new TcpClient();
 
     public SendThread(String serverIp, Integer port) {
         tcpClient.connectionOne(serverIp, port);
         tcpClient.setSendThread(this);
+        pendingQueue=new LinkedList<DCPacket>();
+        outgoingQueue = new LinkedList<DCPacket>();
     }
 
     public void send(DCPacket dcPacket) {
         synchronized (outgoingQueue) {
             outgoingQueue.add(dcPacket);
+            outgoingQueue.notify();
         }
     }
 
@@ -34,7 +37,7 @@ public class SendThread extends Thread {
             synchronized (outgoingQueue) {
                 while (outgoingQueue.isEmpty()) {
                     try {
-                        Thread.sleep(1000);
+                        outgoingQueue.wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

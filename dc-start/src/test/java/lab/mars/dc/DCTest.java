@@ -11,24 +11,12 @@ import lab.mars.dc.reflection.ResourceReflection;
  * Email:yaoalong@foxmail.com
  */
 public class DCTest {
-    SendThread sendThread=new SendThread();
+    SendThread sendThread=new SendThread("192.168.10.131",2181);
     public void send(){
          DCPacket dcPacket=new DCPacket();
         RequestPacket requestPacket=new RequestPacket();
         requestPacket.setId("11133");
-        requestPacket.setAsyncCallback(new AsyncCallback() {
-            /**
-			 *
-			 */
-			private static final long serialVersionUID = -7737777178136621457L;
 
-			@Override
-            public void processResult(DCException.Code code, String id, ResultDO resultDO, ResourceService resourceService) {
-
-
-                System.out.println("ha:"+code.getCode());
-            }
-        });
         LogResourceServiceImpl logResourceService=new LogResourceServiceImpl();
         logResourceService.setId(1222);
         byte[] bytes= ResourceReflection.serializeKryo(logResourceService);
