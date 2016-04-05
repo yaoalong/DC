@@ -13,15 +13,15 @@ import java.util.LinkedList;
 public class SendThread extends Thread {
 
 
-    private final LinkedList<DCPacket> pendingQueue ;
+    private final LinkedList<DCPacket> pendingQueue;
     private final LinkedList<DCPacket> outgoingQueue;
     private TcpClient tcpClient = new TcpClient();
 
     public SendThread(String serverIp, Integer port) {
         tcpClient.connectionOne(serverIp, port);
         tcpClient.setSendThread(this);
-        pendingQueue=new LinkedList<DCPacket>();
-        outgoingQueue = new LinkedList<DCPacket>();
+        pendingQueue = new LinkedList<>();
+        outgoingQueue = new LinkedList<>();
     }
 
     public void send(DCPacket dcPacket) {
@@ -56,7 +56,6 @@ public class SendThread extends Thread {
             System.out.println("Pending:" + pendingQueue.size());
             DCPacket dcPacket1 = pendingQueue.remove();
             ResponsePacket responsePacket = dcPacket.getResponsePacket();
-            System.out.println("kankan" + dcPacket1.getRequestPacket().getAsyncCallback() == null);
             if (dcPacket1.getRequestPacket().getAsyncCallback() != null) {
 
                 if (dcPacket1.getRequestPacket().getOperateType() == OperateType.CREATE || dcPacket1.getRequestPacket().getOperateType() == OperateType.DELETE || dcPacket1.getRequestPacket().getOperateType() == OperateType.UPDATE) {

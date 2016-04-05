@@ -16,12 +16,12 @@ public class RegisterIntoZooKeeper extends Thread implements Watcher {
     private static CountDownLatch countDownLatch = new CountDownLatch(1);
     private String server;
     private ZooKeeper zooKeeper;
-    private String ip;
+    private String value;
 
-    public void register(String ip) throws IOException, KeeperException,
+    public void register(String value) throws IOException, KeeperException,
             InterruptedException {
         zooKeeper = new ZooKeeper(server, 5000, new RegisterIntoZooKeeper());
-        this.ip = ip;
+        this.value = value;
 
     }
 
@@ -33,7 +33,7 @@ public class RegisterIntoZooKeeper extends Thread implements Watcher {
             e.printStackTrace();
         }
         try {
-            zooKeeper.create("/server/" + ip, "1".getBytes(),
+            zooKeeper.create("/server/" + value, "1".getBytes(),
                     Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (KeeperException | InterruptedException e) {
             LOG.trace("error because of:{}", e);

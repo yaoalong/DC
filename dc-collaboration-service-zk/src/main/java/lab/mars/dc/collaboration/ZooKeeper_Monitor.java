@@ -34,6 +34,7 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
             zooKeeper = new ZooKeeper(server, 5000, this);
             countDownLatch.await();
             getChildrens();
+
             while (true) {
                 zooKeeper.getChildren("/server", this);
                 Thread.sleep(1000);
@@ -75,15 +76,17 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
             LOG.error("zookeeper is empty");
             return;
         }
-        List<String> serverStrings = zooKeeper.getChildren(ROOT_NODE, null);
+
+        List<String> serverStrings = zooKeeper.getChildren(ROOT_NODE, this);
+        System.out.println("set servers");
+        serverStrings.forEach(t->{
+            System.out.println("server:"+t);
+        });
         loadBalanceService.setServers(serverStrings);
         loadBalanceService.initialize();
 
     }
 
-    public String getServer() {
-        return server;
-    }
 
     public void setServer(String server) {
         this.server = server;

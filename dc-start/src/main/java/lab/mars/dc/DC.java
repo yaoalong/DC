@@ -42,7 +42,7 @@ public class DC {
         dc.send(generateDCRequestPacket(), new AsyncCallback.ServiceCallback() {
             @Override
             public void processResult(DCException.Code code, String id, ResultDO resultDO) {
-                System.out.println("id:"+id+":code:"+code.getCode());
+                System.out.println("id:" + id + ":code:" + code.getCode());
             }
 
 
@@ -50,17 +50,18 @@ public class DC {
 
     }
 
-    public static  RequestPacket generateDCRequestPacket(){
-        RequestPacket requestPacket=new RequestPacket();
+    public static RequestPacket generateDCRequestPacket() {
+        RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("11133");
 
-        LogResourceServiceImpl logResourceService=new LogResourceServiceImpl();
+        LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
         logResourceService.setId(1222);
-        byte[] bytes= ResourceReflection.serializeKryo(logResourceService);
+        byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
         requestPacket.setResourceService(bytes);
         requestPacket.setOperateType(OperateType.SERVICE);
         return requestPacket;
     }
+
     /**
      * 发送数据包的同步接口
      *
