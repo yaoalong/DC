@@ -25,6 +25,8 @@ import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author:yaoalong.
@@ -32,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
  * Email:yaoalong@foxmail.com
  */
 public class DCDatabaseImpl implements DCDatabaseService {
+    private static final Logger LOG=LoggerFactory.getLogger(DCDatabaseImpl.class);
     private String keyspace;
     private String table;
     private String node;
@@ -54,11 +57,15 @@ public class DCDatabaseImpl implements DCDatabaseService {
     public void connect() {
         cluster = Cluster.builder().addContactPoint(node).build();
         Metadata metadata = cluster.getMetadata();
-        System.out.printf("Connected to cluster: %s\n",
-                metadata.getClusterName());
+        if(LOG.isInfoEnabled()){
+            LOG.info("Connected to cluster: {}",
+                    metadata.getClusterName());
+        }
         for (Host host : metadata.getAllHosts()) {
-            System.out.printf("Datacenter: %s; Host: %s; Rack: %s\n",
-                    host.getDatacenter(), host.getAddress(), host.getRack());
+            if(LOG.isInfoEnabled()){
+                LOG.info("Datacenter: {}; Host: {}; Rack: {}", host.getDatacenter(), host.getAddress(), host.getRack());
+            }
+
         }
         session = cluster.connect();
         if (clean) {
