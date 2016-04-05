@@ -53,7 +53,6 @@ public class SendThread extends Thread {
 
     public void readResponse(DCPacket dcPacket) {
         synchronized (pendingQueue) {
-            System.out.println("Pending:" + pendingQueue.size());
             DCPacket dcPacket1 = pendingQueue.remove();
             ResponsePacket responsePacket = dcPacket.getResponsePacket();
             if (dcPacket1.getRequestPacket().getAsyncCallback() != null) {
@@ -67,8 +66,9 @@ public class SendThread extends Thread {
                     dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
                 } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.SERVICE) {
                     AsyncCallback.ServiceCallback serviceCallback = (AsyncCallback.ServiceCallback) dcPacket1.getRequestPacket().getAsyncCallback();
-
-                    serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), responsePacket.getResult());
+                    System.out.println("result:"+responsePacket.getResult().length);
+                    ResultDO resultDO= (ResultDO) ResourceReflection.deserializeKryo(responsePacket.getResult());
+                    serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resultDO);
                 }
             }
 

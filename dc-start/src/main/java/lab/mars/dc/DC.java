@@ -11,8 +11,6 @@ import lab.mars.dc.reflection.ResourceReflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashSet;
-
 /**
  * Author:yaoalong.
  * Date:2016/3/25.
@@ -44,17 +42,18 @@ public class DC {
         dc.send(generateDCRequestPacket(), new AsyncCallback.ServiceCallback() {
             @Override
             public void processResult(DCException.Code code, String id, ResultDO resultDO) {
-                System.out.println("id:" + id + ":code:" + code.getCode());
+                if(resultDO instanceof  NameResultDO){
+                    System.out.println(((NameResultDO)resultDO).getName());
+                }
+                System.out.println("id:" + id + ":code:" + code.getCode() + ":resultDO:" + resultDO.toString());
             }
-
-
         });
 
     }
 
     public static RequestPacket generateDCRequestPacket() {
         RequestPacket requestPacket = new RequestPacket();
-      //  requestPacket.setId("11133");
+        requestPacket.setId("11133");
 
         LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
         logResourceService.setId(1222);
@@ -81,10 +80,8 @@ public class DC {
      * @param asyncCallback
      */
     public void send(RequestPacket requestPacket, AsyncCallback asyncCallback) {
-        System.out.println("开始发送");
         while (!isStart) {
             try {
-                System.out.println("等待");
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -94,7 +91,6 @@ public class DC {
         requestPacket.setAsyncCallback(asyncCallback);
         dcPacket.setRequestPacket(requestPacket);
         sendThread.send(dcPacket);
-        System.out.println("发送完成");
     }
 
     /**
@@ -121,7 +117,6 @@ public class DC {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("haha");
         sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
         sendThread.start();
         isStart = true;

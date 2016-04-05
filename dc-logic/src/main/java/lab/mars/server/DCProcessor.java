@@ -16,7 +16,9 @@ import static lab.mars.dc.exception.DCException.Code.OK;
  * Author:yaoalong.
  * Date:2016/3/31.
  * Email:yaoalong@foxmail.com
+ * DC的处理逻辑
  */
+
 public class DCProcessor {
 
     private ConcurrentHashMap<String, ResourceService> resourceServices = new ConcurrentHashMap<>();
@@ -29,10 +31,9 @@ public class DCProcessor {
     public void receiveMessage(DCPacket dcPacket, Channel channel) {
         Code code = OK;
         ResponsePacket responsePacket = new ResponsePacket();
-        if(dcPacket==null||dcPacket.getRequestPacket()==null){
-                code=Code.PARAM_ERROR;
-        }
-        else{
+        if (dcPacket == null || dcPacket.getRequestPacket() == null) {
+            code = Code.PARAM_ERROR;
+        } else {
             RequestPacket requestPacket = dcPacket.getRequestPacket();
 
             if (requestPacket.getOperateType().getCode() == OperateType.CREATE.getCode()) {
@@ -92,28 +93,32 @@ public class DCProcessor {
                         ResourceServiceDO resourceServiceDO = dcDatabaseService.retrieve(requestPacket.getId());
                         if (resourceServiceDO != null) {
                             ResourceService resourceService = (ResourceService) ResourceReflection.deserializeKryo(resourceServiceDO.getData());
-                            resourceService.service(null);
+                            ResultDO resultDO = resourceService.service(null);
+                            responsePacket.setResult(ResourceReflection.serializeKryo(resultDO));
+                        }
+                        else{
+                            code=Code.RESOURCE_NOT_EXISTS;
                         }
                     } catch (DCException e) {
                         code = e.getCode();
                     }
 
                 } else {
-                    resourceServices.get(requestPacket.getId()).service(null);
+                   ResultDO resultDO= resourceServices.get(requestPacket.getId()).service(null);
+                    responsePacket.setResult(ResourceReflection.serializeKryo(resultDO));
                 }
-            }
-            else{
-                code=Code.OPERATE_TYPE_NOT_SUPPORT;
+            } else {
+                code = Code.OPERATE_TYPE_NOT_SUPPORT;
             }
         }
 
         responsePacket.setCode(code);
-        DCPacket result=new DCPacket();
+        DCPacket result = new DCPacket();
         result.setResponsePacket(responsePacket);
         channel.writeAndFlush(result);
     }
 
-    public void close(){
+    public void close() {
         dcDatabaseService.close();
     }
 

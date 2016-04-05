@@ -1,6 +1,7 @@
 package lab.mars.dc.impl;
 
 import lab.mars.dc.DataContent;
+import lab.mars.dc.NameResultDO;
 import lab.mars.dc.ResourceService;
 import lab.mars.dc.ResultDO;
 
@@ -25,8 +26,9 @@ public class LogResourceServiceImpl implements ResourceService {
     @Override
     public ResultDO service(DataContent dataContent) {
         System.out.println("my Id:"+id);
-
-        return null;
+        NameResultDO nameResultDO=new NameResultDO();
+        nameResultDO.setName("id+"+"long");
+        return nameResultDO;
     }
 
     @Override

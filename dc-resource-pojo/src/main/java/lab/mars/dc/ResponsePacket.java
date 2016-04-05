@@ -25,7 +25,7 @@ public class ResponsePacket implements Serializable{
      */
     private String id;
     private DCException.Code code;
-    private ResultDO result;
+    private byte[] result;
 
     private byte[] resourceService;
     public String getId() {
@@ -44,11 +44,11 @@ public class ResponsePacket implements Serializable{
         this.code = code;
     }
 
-    public ResultDO getResult() {
+    public byte[] getResult() {
         return result;
     }
 
-    public void setResult(ResultDO result) {
+    public void setResult(byte[] result) {
         this.result = result;
     }
 
