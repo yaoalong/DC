@@ -41,17 +41,20 @@ public class ClientChannelHandler extends
 
     private void readResponse(DCPacket dcPacket) throws IOException {
         DCPacket packet;
+        System.out.println("收到消息");
         synchronized (tcpClient.getPendingQueue()) {
             if (tcpClient.getPendingQueue().size() == 0) {
                 throw new IOException("Nothing in the queue, but got "
                 );
             }
             packet = tcpClient.getPendingQueue().remove();
-            packet.setFinished(true);
-            packet.setResponsePacket(dcPacket.getResponsePacket());
-            if (tcpClient.getSendThread() != null) {
-                tcpClient.getSendThread().readResponse(packet);
+            synchronized (packet){
+                packet.setFinished(true);
+                packet.setResponsePacket(dcPacket.getResponsePacket());
+                packet.notifyAll();
             }
+
+
 
         }
     }

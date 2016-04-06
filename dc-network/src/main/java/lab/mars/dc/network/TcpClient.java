@@ -55,7 +55,14 @@ public class TcpClient extends TcpClientNetwork {
         channel.writeAndFlush(msg);
         System.out.println("写入");
 
-
+        synchronized (msg){
+            if(!((DCPacket)msg).isFinished()){
+                msg.wait();
+            }
+        }
+        if(sendThread!=null){
+            sendThread.readResponse((DCPacket)msg);
+        }
 
     }
 

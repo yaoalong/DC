@@ -57,6 +57,7 @@ public class SendThread extends Thread {
     }
 
     public void readResponse(DCPacket dcPacket) {
+        System.out.println("FF");
         synchronized (pendingQueue) {
             DCPacket dcPacket1 = pendingQueue.remove();
             ResponsePacket responsePacket = dcPacket.getResponsePacket();
