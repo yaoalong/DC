@@ -17,7 +17,7 @@ public class SendThread extends Thread {
     private final LinkedList<DCPacket> outgoingQueue;
     private TcpClient tcpClient = new TcpClient();
 
-    public SendThread(String serverIp, Integer port) {
+    public SendThread(String serverIp, Integer port)  {
         tcpClient.connectionOne(serverIp, port);
         tcpClient.setSendThread(this);
         pendingQueue = new LinkedList<>();
@@ -46,7 +46,12 @@ public class SendThread extends Thread {
                 synchronized (pendingQueue) {
                     pendingQueue.add(requestPacket);
                 }
-                tcpClient.write(requestPacket);
+                try {
+                    tcpClient.write(requestPacket);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    break;
+                }
             }
         }
     }
@@ -56,7 +61,6 @@ public class SendThread extends Thread {
             DCPacket dcPacket1 = pendingQueue.remove();
             ResponsePacket responsePacket = dcPacket.getResponsePacket();
             if (dcPacket1.getRequestPacket().getAsyncCallback() != null) {
-
                 if (dcPacket1.getRequestPacket().getOperateType() == OperateType.CREATE || dcPacket1.getRequestPacket().getOperateType() == OperateType.DELETE || dcPacket1.getRequestPacket().getOperateType() == OperateType.UPDATE) {
                     AsyncCallback.VoidCallback voidCallback = (AsyncCallback.VoidCallback) dcPacket1.getRequestPacket().getAsyncCallback();
                     voidCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId());
@@ -66,7 +70,6 @@ public class SendThread extends Thread {
                     dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
                 } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.SERVICE) {
                     AsyncCallback.ServiceCallback serviceCallback = (AsyncCallback.ServiceCallback) dcPacket1.getRequestPacket().getAsyncCallback();
-                    System.out.println("result:"+responsePacket.getResult().length);
                     ResultDO resultDO= (ResultDO) ResourceReflection.deserializeKryo(responsePacket.getResult());
                     serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resultDO);
                 }

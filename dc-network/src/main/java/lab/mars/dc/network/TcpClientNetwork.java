@@ -22,6 +22,7 @@ public abstract class TcpClientNetwork {
     protected ReentrantLock reentrantLock = new ReentrantLock();
     protected Condition condition = reentrantLock.newCondition();
     private ChannelInitializer<SocketChannel> socketChannelChannelInitializer;
+    protected volatile boolean isSuccess = true;
 
     public void connectionOne(String host, int port) {
 
@@ -30,17 +31,21 @@ public abstract class TcpClientNetwork {
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(socketChannelChannelInitializer);
+
         bootstrap.connect(host, port).addListener((ChannelFuture future) -> {
             reentrantLock.lock();
             channel = future.channel();
+            if (!future.isSuccess()) {
+                isSuccess = false;
+            }
             condition.signalAll();
             reentrantLock.unlock();
-            System.out.println("链接成功");
         });
+
 
     }
 
-    public abstract void write(Object msg);
+    public abstract void write(Object msg) throws Exception;
 
     public void close() {
         if (channel != null) {

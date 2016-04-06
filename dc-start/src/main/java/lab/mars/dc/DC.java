@@ -117,7 +117,9 @@ public class DC {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
+
+            sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
+
         sendThread.start();
         isStart = true;
 

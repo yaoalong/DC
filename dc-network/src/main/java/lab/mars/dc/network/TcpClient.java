@@ -30,9 +30,11 @@ public class TcpClient extends TcpClientNetwork {
 
     }
 
-    public void write(Object msg) {
+    public void write(Object msg) throws Exception {
+        System.out.println("开始发送");
         while (channel == null) {
             try {
+                System.out.println("等待");
                 reentrantLock.lock();
                 condition.await();
             } catch (InterruptedException e) {
@@ -41,6 +43,9 @@ public class TcpClient extends TcpClientNetwork {
             } finally {
                 reentrantLock.unlock();
             }
+        }
+        if (isSuccess == false) {
+            throw new Exception("Not successfully connect to the server");
         }
         if (pendingQueue != null) {
             synchronized (pendingQueue) {

@@ -108,7 +108,11 @@ public class ServerChannelHandler extends
             return true;
         }
         if (ipAndTcpClient.containsKey(server)) {
-            ipAndTcpClient.get(server).write(dcPacket);
+            try {
+                ipAndTcpClient.get(server).write(dcPacket);
+            } catch (Exception e) {
+                e.printStackTrace();//TODO 加上重试
+            }
             ctx.writeAndFlush(dcPacket);
             return false;
         } else {

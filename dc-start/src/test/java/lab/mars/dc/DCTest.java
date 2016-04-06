@@ -11,7 +11,7 @@ import lab.mars.dc.reflection.ResourceReflection;
  * Email:yaoalong@foxmail.com
  */
 public class DCTest {
-    SendThread sendThread=new SendThread("192.168.10.131",2181);
+    SendThread sendThread;
     public void send(){
          DCPacket dcPacket=new DCPacket();
         RequestPacket requestPacket=new RequestPacket();
@@ -29,6 +29,7 @@ public class DCTest {
     }
     public static void main(String args[]){
         DCTest dcTest=new DCTest();
+            dcTest.sendThread=new SendThread("192.168.10.131",2181);
         dcTest.send();
     }
 }
