@@ -18,7 +18,6 @@ import static lab.mars.dc.exception.DCException.Code.OK;
  * Email:yaoalong@foxmail.com
  * DC的处理逻辑
  */
-
 public class DCProcessor {
 
     private ConcurrentHashMap<String, ResourceService> resourceServices = new ConcurrentHashMap<>();
@@ -28,6 +27,16 @@ public class DCProcessor {
         this.dcDatabaseService = dcDatabaseService;
     }
 
+    /**
+     * 执行逻辑处理
+     * 1.如果是创建服务资源的话，那么首先会创建,然后在内存中加载服务
+     * 2.如果是更新服务资源，首先会关闭内存中的服务，然后更新数据库中的服务，再在内存中重新加载
+     * 3.如果是删除操作，关闭内存中的服务，删除数据库中的服务。
+     * 4.调用服务资源
+     *
+     * @param dcPacket
+     * @param channel
+     */
     public void receiveMessage(DCPacket dcPacket, Channel channel) {
         Code code = OK;
         ResponsePacket responsePacket = new ResponsePacket();
@@ -74,6 +83,7 @@ public class DCProcessor {
             }
             if (resourceServices.contains(requestPacket.getId())) {
                 resourceServices.get(requestPacket.getId()).shutdown();
+                resourceServices.remove(requestPacket.getId());
             }
         } else if (requestPacket.getOperateType().getCode() == OperateType.RETRIEVE.getCode()) {
             try {

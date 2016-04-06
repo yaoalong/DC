@@ -31,7 +31,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     private int numOfVirtualNode = 1;
     private List<String> servers;
     private volatile boolean initialized = false;
-    private TreeMap<Long, String> consistentBuckets=new TreeMap<>();
+    private TreeMap<Long, String> consistentBuckets = new TreeMap<>();
 
     /**
      * 计算一个key的hash值
@@ -58,31 +58,28 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
             throw new IllegalStateException(
                     "++++ trying to initialize with no servers");
         }
-        this.consistentBuckets = getConsistentBuckets(servers);
+        getConsistentBuckets(servers);
         initialized = true;
     }
 
-    public TreeMap<Long, String> getConsistentBuckets(List<String> servers) {
-        TreeMap<Long, String> newConsistentBuckets = new TreeMap<Long, String>();
+    private void getConsistentBuckets(List<String> servers) {
         MessageDigest md5 = MD5.get();
         for (int i = 0; i < servers.size(); i++) {
             for (long j = 0; j < numOfVirtualNode; j++) {
                 byte[] d = md5.digest((servers.get(i) + "-" + j).getBytes());
-                for (int h = 0; h < 1; h++) {
-                    Long k = ((long) (d[3 + h * 4] & 0xFF) << 24)
-                            | ((long) (d[2 + h * 4] & 0xFF) << 16)
-                            | ((long) (d[1 + h * 4] & 0xFF) << 8)
-                            | ((long) (d[0 + h * 4] & 0xFF));
+                Long k = ((long) (d[3] & 0xFF) << 24)
+                        | ((long) (d[2] & 0xFF) << 16)
+                        | ((long) (d[1] & 0xFF) << 8)
+                        | ((long) (d[0] & 0xFF));
 
-                    newConsistentBuckets.put(k, servers.get(i));
-                }
+                consistentBuckets.put(k, servers.get(i));
             }
         }
-        return newConsistentBuckets;
-    }
-@Override
-    public void setServers(List<String> servers) {
+        }
 
+
+    @Override
+    public void setServers(List<String> servers) {
         this.servers = servers;
         synchronized (consistentBuckets) {
             populateConsistentBuckets();
@@ -95,7 +92,6 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     }
 
     public String getServer(String key) {
-
         synchronized (consistentBuckets) {
             return consistentBuckets.get(getBucket(key));
         }
@@ -110,7 +106,6 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
 
     private final Long findPointFor(Long hv) {
         SortedMap<Long, String> tmap = this.consistentBuckets.tailMap(hv);
-
         return (tmap.isEmpty()) ? this.consistentBuckets.firstKey() : tmap
                 .firstKey();
 
