@@ -36,13 +36,14 @@ public class RegisterIntoZooKeeper extends Thread implements Watcher {
             zooKeeper.create("/server/" + value, "1".getBytes(),
                     Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (KeeperException | InterruptedException e) {
-            LOG.trace("error because of:{}", e);
+            if(LOG.isTraceEnabled()){
+                LOG.trace("error because of:", e);
+            }
         }
     }
 
     @Override
     public void process(WatchedEvent event) {
-        System.out.println("Receive watched event:" + event);
         if (KeeperState.SyncConnected == event.getState()) {
             countDownLatch.countDown();
         }
