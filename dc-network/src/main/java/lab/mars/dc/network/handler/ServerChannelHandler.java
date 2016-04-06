@@ -43,14 +43,11 @@ public class ServerChannelHandler extends
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("收到消息");
         lruManage.refresh(ctx.channel());
         DCPacket dcPacket = (DCPacket) msg;
         try {
             if (preProcessPacket(dcPacket, ctx)) {
                 dcProcessor.receiveMessage(dcPacket, ctx.channel());
-
-
             }
         }
         catch (DCException e){

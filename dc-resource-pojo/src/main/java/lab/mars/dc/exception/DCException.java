@@ -37,7 +37,7 @@ public class DCException extends Exception {
     }
 
     public enum Code {
-         OK(0), RESOURCE_EXISTS(-110), RESOURCE_NOT_EXISTS(-109), PARAM_ERROR(-108),OPERATE_TYPE_NOT_SUPPORT(-107);
+         OK(0), RESOURCE_EXISTS(-110), RESOURCE_NOT_EXISTS(-109), PARAM_ERROR(-108),OPERATE_TYPE_NOT_SUPPORT(-107),SYSTEM_ERROR(-106);
         private final int code;
 
         Code(int code) {
