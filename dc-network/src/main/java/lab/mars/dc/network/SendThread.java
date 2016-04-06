@@ -1,6 +1,7 @@
 package lab.mars.dc.network;
 
 import lab.mars.dc.*;
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.reflection.ResourceReflection;
 
 import java.util.LinkedList;
@@ -57,7 +58,6 @@ public class SendThread extends Thread {
     }
 
     public void readResponse(DCPacket dcPacket) {
-        System.out.println("FF");
         synchronized (pendingQueue) {
             DCPacket dcPacket1 = pendingQueue.remove();
             ResponsePacket responsePacket = dcPacket.getResponsePacket();
@@ -71,8 +71,17 @@ public class SendThread extends Thread {
                     dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
                 } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.SERVICE) {
                     AsyncCallback.ServiceCallback serviceCallback = (AsyncCallback.ServiceCallback) dcPacket1.getRequestPacket().getAsyncCallback();
-                    ResultDO resultDO= (ResultDO) ResourceReflection.deserializeKryo(responsePacket.getResult());
-                    serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resultDO);
+                    if(dcPacket1.getResponsePacket()==null){
+                        ResponsePacket responsePacket1=new ResponsePacket();
+                        responsePacket1.setCode(DCException.Code.SYSTEM_ERROR);
+                        serviceCallback.processResult(responsePacket1.getCode(),null,null);
+                    }
+                    else{
+                        ResultDO resultDO= (ResultDO) ResourceReflection.deserializeKryo(responsePacket.getResult());
+                        serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resultDO);
+                    }
+
+
                 }
             }
 

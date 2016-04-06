@@ -45,7 +45,6 @@ public class TcpClient extends TcpClientNetwork {
         if (isSuccess == false) {
             throw new Exception("Not successfully connect to the server");
         }
-        System.out.println("ff");
         if (pendingQueue != null) {
             synchronized (pendingQueue) {
                 pendingQueue.add((DCPacket) msg);
@@ -57,8 +56,11 @@ public class TcpClient extends TcpClientNetwork {
         channel.writeAndFlush(msg);
         synchronized (msg){
             if(!((DCPacket)msg).isFinished()){
-                msg.wait();
+                msg.wait(3000);
             }
+        }
+        synchronized (pendingQueue){
+            pendingQueue.remove();
         }
         if(sendThread!=null){
             sendThread.readResponse((DCPacket)msg);

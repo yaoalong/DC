@@ -66,7 +66,6 @@ public class ServerChannelHandler extends
 //                    null, m2mRecord);
 //            ctx.writeAndFlush(responseM2mPacket);
         }
-
     }
 
     @Override
@@ -82,11 +81,10 @@ public class ServerChannelHandler extends
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        LOG.info("Channel disconnect caused close:{}", cause);
+        LOG.info("Channel disconnect caused close:", cause);
         cause.printStackTrace();
         lruManage.remove(ctx);
         ctx.close();
-
     }
 
     /**
@@ -128,7 +126,7 @@ public class ServerChannelHandler extends
                     ipAndTcpClient.put(server, tcpClient);
                     return false;
                 } catch (Exception e) {
-                    LOG.error("process packet error:{}", e);
+                    LOG.error("process packet error:", e);
                 }
             }
             try {
@@ -148,5 +146,4 @@ public class ServerChannelHandler extends
         String[] splitMessage = ip.split(":");
         return splitMessage;
     }
-
 }
