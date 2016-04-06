@@ -128,6 +128,7 @@ public class DC {
     public void shutDown() {
         isStart = false;
         tcpServer.close();
+        sendThread.close();
 
     }
 }

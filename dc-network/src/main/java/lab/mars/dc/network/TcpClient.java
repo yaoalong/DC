@@ -33,7 +33,6 @@ public class TcpClient extends TcpClientNetwork {
     public void write(Object msg) throws Exception {
         while (channel == null) {
             try {
-                System.out.println("等待");
                 reentrantLock.lock();
                 condition.await();
             } catch (InterruptedException e) {
@@ -52,9 +51,10 @@ public class TcpClient extends TcpClientNetwork {
                 pendingQueue.add((DCPacket) msg);
             }
         }
+        if(!channel.isActive()){
+            throw  new Exception("channel is closed");
+        }
         channel.writeAndFlush(msg);
-        System.out.println("写入");
-
         synchronized (msg){
             if(!((DCPacket)msg).isFinished()){
                 msg.wait();
@@ -70,9 +70,6 @@ public class TcpClient extends TcpClientNetwork {
         return pendingQueue;
     }
 
-    public SendThread getSendThread() {
-        return sendThread;
-    }
 
     public void setSendThread(SendThread sendThread) {
         this.sendThread = sendThread;

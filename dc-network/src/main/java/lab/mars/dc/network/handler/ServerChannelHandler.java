@@ -102,37 +102,42 @@ public class ServerChannelHandler extends
             throw new DCException(DCException.Code.PARAM_ERROR);
         }
         String key = dcPacket.getRequestPacket().getId();
-
-
         String server = loadBalanceService.getServer(key);
         if (server.equals(self)) {
             return true;
         }
-        if (ipAndTcpClient.containsKey(server)) {
-            try {
-                ipAndTcpClient.get(server).write(dcPacket);
-            } catch (Exception e) {
-                e.printStackTrace();//TODO 加上重试
-            }
-            ctx.writeAndFlush(dcPacket);
-            return false;
-        } else {
-            try {
-                TcpClient tcpClient = new TcpClient(pendingQueue);
-                String[] splitStrings = spilitString(server);
-                tcpClient.connectionOne(splitStrings[0],
-                        Integer.valueOf(splitStrings[1]));
-
-                tcpClient.write(dcPacket);
+        for(int i=0;i<5;i++){
+            if (ipAndTcpClient.containsKey(server)) {
+                try {
+                    ipAndTcpClient.get(server).write(dcPacket);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ipAndTcpClient.remove(server);
+                    continue;
+                }
                 ctx.writeAndFlush(dcPacket);
-                ipAndTcpClient.put(server, tcpClient);
                 return false;
-            } catch (Exception e) {
-                LOG.error("process packet error:{}", e);
+            } else {
+                try {
+                    TcpClient tcpClient = new TcpClient(pendingQueue);
+                    String[] splitStrings = spilitString(server);
+                    tcpClient.connectionOne(splitStrings[0],
+                            Integer.valueOf(splitStrings[1]));
+                    tcpClient.write(dcPacket);
+                    ctx.writeAndFlush(dcPacket);
+                    ipAndTcpClient.put(server, tcpClient);
+                    return false;
+                } catch (Exception e) {
+                    LOG.error("process packet error:{}", e);
+                }
             }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            server = loadBalanceService.getServer(key);
         }
-
-
         return false;
     }
 

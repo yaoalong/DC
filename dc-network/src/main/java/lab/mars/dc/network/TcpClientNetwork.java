@@ -21,8 +21,8 @@ public abstract class TcpClientNetwork {
     protected Channel channel;
     protected ReentrantLock reentrantLock = new ReentrantLock();
     protected Condition condition = reentrantLock.newCondition();
-    private ChannelInitializer<SocketChannel> socketChannelChannelInitializer;
     protected volatile boolean isSuccess = true;
+    private ChannelInitializer<SocketChannel> socketChannelChannelInitializer;
 
     public void connectionOne(String host, int port) {
 
@@ -38,7 +38,6 @@ public abstract class TcpClientNetwork {
             if (!future.isSuccess()) {
                 isSuccess = false;
             }
-            System.out.println("成功:"+future.isSuccess());
             condition.signalAll();
             reentrantLock.unlock();
         });
@@ -52,14 +51,6 @@ public abstract class TcpClientNetwork {
         if (channel != null) {
             channel.close();
         }
-    }
-
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
     }
 
     public void setSocketChannelChannelInitializer(

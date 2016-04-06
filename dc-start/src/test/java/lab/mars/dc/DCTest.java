@@ -31,7 +31,15 @@ public class DCTest {
         requestPacket.setOperateType(OperateType.SERVICE);
         dcPacket.setRequestPacket(requestPacket);
         sendThread.start();
-        sendThread.send(dcPacket);
+        for(int i=0;i<2;i++){
+            sendThread.send(dcPacket);
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         System.out.println("发送成功");
     }
 }
