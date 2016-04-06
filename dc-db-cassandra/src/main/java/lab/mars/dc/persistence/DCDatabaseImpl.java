@@ -61,12 +61,11 @@ public class DCDatabaseImpl implements DCDatabaseService {
             LOG.info("Connected to cluster: {}",
                     metadata.getClusterName());
         }
-        for (Host host : metadata.getAllHosts()) {
+        metadata.getAllHosts().forEach(host->{
             if(LOG.isInfoEnabled()){
                 LOG.info("Datacenter: {}; Host: {}; Rack: {}", host.getDatacenter(), host.getAddress(), host.getRack());
             }
-
-        }
+        });
         session = cluster.connect();
         if (clean) {
             session.execute("use " + keyspace + ";");
@@ -130,9 +129,9 @@ public class DCDatabaseImpl implements DCDatabaseService {
             }
             return resourceServiceDOs.get(0);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            LOG.error("retrieve error:{}",e);
+           throw  e;
         }
     }
 
@@ -150,8 +149,8 @@ public class DCDatabaseImpl implements DCDatabaseService {
             session.execute(insert);
             return 1L;
         } catch (Exception e) {
-            e.printStackTrace();
-            return -1L;
+             LOG.error("create error:{}",e);
+            throw  e;
         }
 
     }
@@ -162,15 +161,14 @@ public class DCDatabaseImpl implements DCDatabaseService {
         if (resourceServiceDO == null) {
             throw new DCException(RESOURCE_NOT_EXISTS, id);
         }
-        checkParam(resourceServiceDO);
         try {
 
             Statement delete = query().delete().from(keyspace, table)
                     .where(eq("id", id));
             session.execute(delete);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return Long.valueOf(0);
+        } catch (Exception e) {
+            LOG.error("delete error:{}",e);
+           throw  e;
         }
         return Long.valueOf(1);
     }
@@ -187,9 +185,9 @@ public class DCDatabaseImpl implements DCDatabaseService {
             delete(id);
             pre.setData(resourceServiceDO.getData());
             create(pre);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return 0L;
+        } catch (Exception e) {
+            e.printStackTrace();
+           throw e;
         }
         return 1L;
     }
