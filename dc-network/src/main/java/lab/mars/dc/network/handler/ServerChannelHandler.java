@@ -26,13 +26,13 @@ public class ServerChannelHandler extends
     private static Logger LOG = LoggerFactory
             .getLogger(ServerChannelHandler.class);
     private final LinkedList<DCPacket> pendingQueue = new LinkedList<DCPacket>();
-    private ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
-    private String self;
-    private LoadBalanceService loadBalanceService;
+    private final ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
+    private final String self;
+    private final LoadBalanceService loadBalanceService;
 
-    private LRUManage lruManage;
+    private final LRUManage lruManage;
 
-    private DCProcessor dcProcessor;
+    private final DCProcessor dcProcessor;
 
     public ServerChannelHandler(String self, LRUManage lruManage, LoadBalanceService loadBalanceService, DCProcessor dcProcessor) {
         this.self = self;
@@ -43,7 +43,7 @@ public class ServerChannelHandler extends
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
-        lruManage.refresh(ctx.channel());
+        lruManage.refresh(ctx);
         DCPacket dcPacket = (DCPacket) msg;
         try {
             if (preProcessPacket(dcPacket, ctx)) {
@@ -71,7 +71,7 @@ public class ServerChannelHandler extends
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        lruManage.add(ctx.channel());
+        lruManage.add(ctx);
         ctx.fireChannelRegistered();
     }
 
@@ -84,6 +84,7 @@ public class ServerChannelHandler extends
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOG.info("Channel disconnect caused close:{}", cause);
         cause.printStackTrace();
+        lruManage.remove(ctx);
         ctx.close();
 
     }

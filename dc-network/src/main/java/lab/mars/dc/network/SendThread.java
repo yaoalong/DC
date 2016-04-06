@@ -77,4 +77,7 @@ public class SendThread extends Thread {
 
         }
     }
+    public void close(){
+        tcpClient.close();
+    }
 }

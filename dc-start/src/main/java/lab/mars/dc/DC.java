@@ -42,8 +42,8 @@ public class DC {
         dc.send(generateDCRequestPacket(), new AsyncCallback.ServiceCallback() {
             @Override
             public void processResult(DCException.Code code, String id, ResultDO resultDO) {
-                if(resultDO instanceof  NameResultDO){
-                    System.out.println(((NameResultDO)resultDO).getName());
+                if (resultDO instanceof NameResultDO) {
+                    System.out.println(((NameResultDO) resultDO).getName());
                 }
                 System.out.println("id:" + id + ":code:" + code.getCode() + ":resultDO:" + resultDO.toString());
             }
@@ -118,7 +118,7 @@ public class DC {
             e.printStackTrace();
         }
 
-            sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
+        sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
 
         sendThread.start();
         isStart = true;

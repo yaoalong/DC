@@ -1,6 +1,7 @@
 package lab.mars.dc.connectmanage;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class LRUManage implements ConnectManager {
     /**
      * 利用了LinkedHashMap实现了LRU 连接池
      */
-    public final LinkedHashMap<Channel, Boolean> connectMessages = new LinkedHashMap<Channel, Boolean>(
+    public final LinkedHashMap<ChannelHandlerContext, Boolean> connectMessages = new LinkedHashMap<ChannelHandlerContext, Boolean>(
             size, 0.5f, true) {
         /**
          *
@@ -25,8 +26,9 @@ public class LRUManage implements ConnectManager {
         private static final long serialVersionUID = 3033453005289310613L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Channel, Boolean> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<ChannelHandlerContext, Boolean> eldest) {
             if (size() > size) {
+                System.out.println("开始guanbi");
                 eldest.getKey().close();
                 return true;
             }
@@ -43,12 +45,17 @@ public class LRUManage implements ConnectManager {
     }
 
     @Override
-    public synchronized void refresh(Channel channel) {
-        connectMessages.get(channel);
+    public synchronized void refresh(ChannelHandlerContext ctx) {
+        connectMessages.get(ctx);
     }
 
     @Override
-    public synchronized void add(Channel channel) {
-        connectMessages.put(channel, true);
+    public synchronized void add(ChannelHandlerContext ctx) {
+        System.out.println("添加");
+        connectMessages.put(ctx, true);
+    }
+    public synchronized  void remove(ChannelHandlerContext ctx){
+
+        connectMessages.remove(ctx);
     }
 }

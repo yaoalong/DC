@@ -38,6 +38,7 @@ public abstract class TcpClientNetwork {
             if (!future.isSuccess()) {
                 isSuccess = false;
             }
+            System.out.println("成功:"+future.isSuccess());
             condition.signalAll();
             reentrantLock.unlock();
         });

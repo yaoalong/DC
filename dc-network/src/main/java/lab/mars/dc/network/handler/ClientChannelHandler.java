@@ -63,7 +63,9 @@ public class ClientChannelHandler extends
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        LOG.info("close ctx,because of:", cause);
+        System.out.println("关闭");
+        LOG.error("close ctx,because of:", cause);
         ctx.close();
     }
+
 }

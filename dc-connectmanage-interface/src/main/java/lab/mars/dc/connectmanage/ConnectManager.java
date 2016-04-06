@@ -1,6 +1,7 @@
 package lab.mars.dc.connectmanage;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
  * Author:yaoalong.
@@ -10,7 +11,7 @@ import io.netty.channel.Channel;
  */
 public interface ConnectManager {
 
-    void refresh(Channel channel);
+    void refresh(ChannelHandlerContext ctx);
 
-    void add(Channel channel);
+    void add(ChannelHandlerContext ctx);
 }
