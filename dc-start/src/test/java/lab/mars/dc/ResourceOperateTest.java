@@ -1,6 +1,9 @@
-package lab.mars.dc.test;
+package lab.mars.dc;
 
-import lab.mars.dc.*;
+import lab.mars.dc.exception.DCException;
+import lab.mars.dc.impl.LogResourceServiceImpl;
+import lab.mars.dc.reflection.ResourceReflection;
+
 import org.junit.Test;
 
 /**
@@ -20,7 +23,10 @@ public class ResourceOperateTest extends DCTestBase {
         RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("/ces1/ae1");
         requestPacket.setOperateType(OperateType.CREATE);
-        requestPacket.setResourceService(new LogResourceService());
+        LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
+        logResourceService.setId(1222);
+        byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
+        requestPacket.setResourceService(bytes);
         dc.send(requestPacket, asyncCallback);
     }
 
@@ -43,8 +49,12 @@ public class ResourceOperateTest extends DCTestBase {
         RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("/ces1/ae1");
         requestPacket.setOperateType(OperateType.UPDATE);
-        requestPacket.setResourceService(new LogResourceService());
+        LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
+        logResourceService.setId(1222);
+        byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
+        requestPacket.setResourceService(bytes);
         dc.send(requestPacket, asyncCallback);
+        
     }
 
     /**
@@ -55,8 +65,18 @@ public class ResourceOperateTest extends DCTestBase {
         RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("/ces1/ae1");
         requestPacket.setOperateType(OperateType.RETRIEVE);
-        requestPacket.setResourceService(new LogResourceService());
-        dc.send(requestPacket, asyncCallback);
+        dc.send(requestPacket, new AsyncCallback.DataCallback() {
+            @Override
+            public void processResult(DCException.Code code, String id, ResourceService resoureService) {
+                if(DCException.Code.OK==code){
+                    System.out.println("success");
+                }
+                else{
+                    System.out.println("error"+code);
+                }
+            }
+        });
+      
     }
 
     /**
@@ -64,13 +84,7 @@ public class ResourceOperateTest extends DCTestBase {
      */
     @Test
     public void testCalcuateResource() {
-        RequestPacket requestPacket = new RequestPacket();
-        requestPacket.setId("/ces1/ae1");
-        requestPacket.setOperateType(OperateType.SERVICE);
-        requestPacket.setData(new DataContent() {
-        });
-        ResponsePacket responsePacket = dc.send(requestPacket);
-        ResultDO resultDO = responsePacket.getResult();
+
         //TODO 对计算结果进行处理
     }
 }

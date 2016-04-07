@@ -62,9 +62,14 @@ public class TcpClient extends TcpClientNetwork {
             throw new Exception("channel is closed");
         }
         channel.writeAndFlush(msg);
+        System.out.println("发送了");
         synchronized (msg) {
             if (!((DCPacket) msg).isFinished()) {
-                msg.wait(3000);
+                try{
+                    msg.wait(3000);
+                }catch (InterruptedException e){
+
+                }
             }
         }
         if (!((DCPacket) msg).isFinished()) {
@@ -75,6 +80,7 @@ public class TcpClient extends TcpClientNetwork {
             responsePacket.setCode(DCException.Code.SYSTEM_ERROR);
             ((DCPacket)msg).setResponsePacket(responsePacket);
         }
+        System.out.println("OK");
         if (sendThread != null) {
             sendThread.readResponse((DCPacket) msg);
         }

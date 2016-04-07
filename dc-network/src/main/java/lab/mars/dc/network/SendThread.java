@@ -75,7 +75,12 @@ public class SendThread extends Thread {
                 } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.RETRIEVE) {
                     DataCallback dataCallback = (DataCallback) asyncCallback;
                     if(dcPacket.getResponsePacket().getCode()==Code.OK){
-                        ResourceService resourceService = (ResourceService) ResourceReflection.deserializeKryo(responsePacket.getResourceService());
+                    	
+                        ResourceService resourceService=null;
+                        if(responsePacket.getResourceService()!=null){
+                        	resourceService = (ResourceService) ResourceReflection.deserializeKryo(responsePacket.getResourceService());	
+                        }
+                         
                         dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
                     }
                   else{

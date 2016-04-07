@@ -178,7 +178,11 @@ public class DCDatabaseImpl implements DCDatabaseService {
         if (StringUtils.isBlank(id)) {
             throw new DCException(PARAM_ERROR);
         }
+
         ResourceServiceDO pre = retrieve(id);
+        if(pre==null){
+            throw  new DCException(RESOURCE_NOT_EXISTS);
+        }
         checkParam(pre);
         try {
             delete(id);
