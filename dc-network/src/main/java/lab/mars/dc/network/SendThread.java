@@ -5,6 +5,7 @@ import lab.mars.dc.exception.DCException;
 import lab.mars.dc.reflection.ResourceReflection;
 
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static lab.mars.dc.AsyncCallback.*;
 import static lab.mars.dc.exception.DCException.*;
@@ -20,7 +21,6 @@ public class SendThread extends Thread {
     private final LinkedList<DCPacket> pendingQueue;
     private final LinkedList<DCPacket> outgoingQueue;
     private TcpClient tcpClient = new TcpClient();
-
     public SendThread(String serverIp, Integer port)  {
         tcpClient.connectionOne(serverIp, port);
         tcpClient.setSendThread(this);
@@ -61,7 +61,6 @@ public class SendThread extends Thread {
                 }
             }
         }
-        System.out.println("FFF");
     }
 
     public void readResponse(DCPacket dcPacket) {

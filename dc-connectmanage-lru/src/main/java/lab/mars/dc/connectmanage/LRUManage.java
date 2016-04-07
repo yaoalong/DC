@@ -28,7 +28,6 @@ public class LRUManage implements ConnectManager {
         @Override
         protected boolean removeEldestEntry(Map.Entry<ChannelHandlerContext, Boolean> eldest) {
             if (size() > size) {
-                System.out.println("开始guanbi");
                 eldest.getKey().close();
                 return true;
             }

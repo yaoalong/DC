@@ -29,7 +29,6 @@ public class TcpServerNetwork {
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_BACKLOG, 1000)
                 .childHandler(channelChannelInitializer);
-        System.out.println("host:"+host+" port:"+port);
         b.bind(host, port).addListener((ChannelFuture channelFuture) -> {
             channels.add(channelFuture.channel());
         });

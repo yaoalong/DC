@@ -26,6 +26,7 @@ public class RequestPacket implements Serializable{
 
 
     private  transient  AsyncCallback asyncCallback;
+
     public String getId() {
         return id;
     }
@@ -57,5 +58,6 @@ public class RequestPacket implements Serializable{
     public void setAsyncCallback(AsyncCallback asyncCallback) {
         this.asyncCallback = asyncCallback;
     }
+
 }
 

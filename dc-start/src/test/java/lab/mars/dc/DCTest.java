@@ -1,8 +1,11 @@
 package lab.mars.dc;
 
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.impl.LogResourceServiceImpl;
-import lab.mars.dc.network.SendThread;
 import lab.mars.dc.reflection.ResourceReflection;
+import org.junit.Test;
+
+import java.io.IOException;
 
 /**
  * Author:yaoalong.
@@ -10,17 +13,11 @@ import lab.mars.dc.reflection.ResourceReflection;
  * Email:yaoalong@foxmail.com
  */
 public class DCTest {
-    SendThread sendThread;
-
-    public static void main(String args[]) {
-        DCTest dcTest = new DCTest();
-        dcTest.sendThread = new SendThread("192.168.10.131", 2182);
-        dcTest.send();
-
-    }
-
-    public void send() {
-        DCPacket dcPacket = new DCPacket();
+    /**
+     * 168s 10万条服务
+     * @return
+     */
+    public static RequestPacket generateDCRequestPacket() {
         RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("11133");
 
@@ -29,17 +26,31 @@ public class DCTest {
         byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
         requestPacket.setResourceService(bytes);
         requestPacket.setOperateType(OperateType.SERVICE);
-        dcPacket.setRequestPacket(requestPacket);
-        sendThread.start();
-        for(int i=0;i<2;i++){
-            sendThread.send(dcPacket);
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        return requestPacket;
+    }
 
-        System.out.println("发送成功");
+    @Test
+    public void test() throws IOException, DCConfig.ConfigException {
+        DC dc = new DC();
+        dc.start(new String[]{"zoo1.cfg"});
+        int number = 100000;
+        long start = System.nanoTime();
+        for (int i = 0; i < number; i++) {
+            dc.send(generateDCRequestPacket(), new AsyncCallback.ServiceCallback() {
+                @Override
+                public void processResult(DCException.Code code, String id, ResultDO resultDO) {
+                    if (resultDO instanceof NameResultDO) {
+                        // System.out.println(((NameResultDO) resultDO).getName());
+                    }
+                    // System.out.println("id:" + id + ":code:" + code.getCode() + ":resultDO:" + resultDO.toString());
+                    Util.atomicInteger.getAndIncrement();
+                }
+            });
+        }
+        while (Util.atomicInteger.get() != number) {
+            System.out.println(Util.atomicInteger.get());
+        }
+        System.out.println("cost time:" + (System.nanoTime() - start));
+        dc.shutDown();
     }
 }

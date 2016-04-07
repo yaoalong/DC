@@ -25,7 +25,7 @@ public class DCConfig {
         File configFile = new File(path);
 
         LOG.info("Reading configuration from: " + configFile);
-
+        System.out.println(configFile.getAbsolutePath());
         try {
             if (!configFile.exists()) {
                 throw new IllegalArgumentException(configFile.toString()
