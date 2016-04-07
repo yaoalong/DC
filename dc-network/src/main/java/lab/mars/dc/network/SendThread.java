@@ -6,6 +6,9 @@ import lab.mars.dc.reflection.ResourceReflection;
 
 import java.util.LinkedList;
 
+import static lab.mars.dc.AsyncCallback.*;
+import static lab.mars.dc.exception.DCException.*;
+
 /**
  * Author:yaoalong.
  * Date:2016/4/1.
@@ -61,27 +64,31 @@ public class SendThread extends Thread {
         synchronized (pendingQueue) {
             DCPacket dcPacket1 = pendingQueue.remove();
             ResponsePacket responsePacket = dcPacket.getResponsePacket();
-            if (dcPacket1.getRequestPacket().getAsyncCallback() != null) {
+            AsyncCallback asyncCallback=dcPacket1.getRequestPacket().getAsyncCallback();
+            if (asyncCallback != null) {
                 if (dcPacket1.getRequestPacket().getOperateType() == OperateType.CREATE || dcPacket1.getRequestPacket().getOperateType() == OperateType.DELETE || dcPacket1.getRequestPacket().getOperateType() == OperateType.UPDATE) {
-                    AsyncCallback.VoidCallback voidCallback = (AsyncCallback.VoidCallback) dcPacket1.getRequestPacket().getAsyncCallback();
+                    VoidCallback voidCallback = (VoidCallback) asyncCallback;
                     voidCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId());
                 } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.RETRIEVE) {
-                    AsyncCallback.DataCallback dataCallback = (AsyncCallback.DataCallback) dcPacket1.getRequestPacket().getAsyncCallback();
-                    ResourceService resourceService = (ResourceService) ResourceReflection.deserializeKryo(responsePacket.getResourceService());
-                    dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
+                    DataCallback dataCallback = (DataCallback) asyncCallback;
+                    if(dcPacket.getResponsePacket().getCode()==Code.OK){
+                        ResourceService resourceService = (ResourceService) ResourceReflection.deserializeKryo(responsePacket.getResourceService());
+                        dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
+                    }
+                  else{
+                        dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(),null);
+                    }
                 } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.SERVICE) {
-                    AsyncCallback.ServiceCallback serviceCallback = (AsyncCallback.ServiceCallback) dcPacket1.getRequestPacket().getAsyncCallback();
+                    ServiceCallback serviceCallback = (ServiceCallback) dcPacket1.getRequestPacket().getAsyncCallback();
                     if(dcPacket1.getResponsePacket()==null){
                         ResponsePacket responsePacket1=new ResponsePacket();
-                        responsePacket1.setCode(DCException.Code.SYSTEM_ERROR);
+                        responsePacket1.setCode(Code.SYSTEM_ERROR);
                         serviceCallback.processResult(responsePacket1.getCode(),null,null);
                     }
                     else{
                         ResultDO resultDO= (ResultDO) ResourceReflection.deserializeKryo(responsePacket.getResult());
                         serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resultDO);
                     }
-
-
                 }
             }
 

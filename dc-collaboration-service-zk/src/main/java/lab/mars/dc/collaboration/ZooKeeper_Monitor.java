@@ -42,16 +42,13 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
 
         } catch (Exception e) {
             e.printStackTrace();
-            LOG.error("zookeepeer_monitor is error because of:{}",
-                    e.getMessage());
+            LOG.error("zookeepeer_monitor is error because of:",
+                    e);
         }
     }
 
     @Override
     public void process(WatchedEvent event) {
-        System.out.println("Receive watched event:" + event);
-        System.out.println("type:" + event.getType().getIntValue());
-        System.out.println("path:" + event.getPath());
         if (KeeperState.SyncConnected == event.getState()
                 && EventType.NodeChildrenChanged != event.getType()) {
             countDownLatch.countDown();
@@ -76,10 +73,8 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
             LOG.error("zookeeper is empty");
             return;
         }
-
         List<String> serverStrings = zooKeeper.getChildren(ROOT_NODE, this);
         loadBalanceService.setServers(serverStrings);
-
     }
 
 
@@ -90,5 +85,4 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
     public void setLoadBalanceService(LoadBalanceService loadBalanceService) {
         this.loadBalanceService = loadBalanceService;
     }
-
 }

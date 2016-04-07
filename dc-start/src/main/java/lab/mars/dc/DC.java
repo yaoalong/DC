@@ -129,6 +129,5 @@ public class DC {
         isStart = false;
         tcpServer.close();
         sendThread.close();
-
     }
 }

@@ -1,6 +1,5 @@
 package lab.mars.dc.connectmanage;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
 /**

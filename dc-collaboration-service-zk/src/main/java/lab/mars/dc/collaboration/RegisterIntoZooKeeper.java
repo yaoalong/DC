@@ -47,11 +47,8 @@ public class RegisterIntoZooKeeper extends Thread implements Watcher {
         if (KeeperState.SyncConnected == event.getState()) {
             countDownLatch.countDown();
         }
-
     }
     public void setServer(String server) {
         this.server = server;
     }
-
-
 }

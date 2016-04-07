@@ -16,7 +16,6 @@ public class ZKRegisterAndMonitorService implements RegisterAndMonitorService {
     public void register(String zooKeeperServer, String value, LoadBalanceService loadBalanceService) {
         RegisterIntoZooKeeper registerIntoZooKeeper = new RegisterIntoZooKeeper();
         registerIntoZooKeeper.setServer(zooKeeperServer);
-
         try {
             registerIntoZooKeeper.register(value);
         } catch (IOException e) {
@@ -34,11 +33,9 @@ public class ZKRegisterAndMonitorService implements RegisterAndMonitorService {
                 e.printStackTrace();
             }
         }
-
         ZooKeeper_Monitor zooKeeper_monitor = new ZooKeeper_Monitor();
         zooKeeper_monitor.setZooKeeperServer(zooKeeperServer);
         zooKeeper_monitor.setLoadBalanceService(loadBalanceService);
         zooKeeper_monitor.start();
-
     }
 }
