@@ -59,7 +59,7 @@ public class TcpClient extends TcpClientNetwork {
                 msg.wait(3000);
             }
         }
-        synchronized (pendingQueue){
+        if(!((DCPacket)msg).isFinished()){
             pendingQueue.remove();
         }
         if(sendThread!=null){
