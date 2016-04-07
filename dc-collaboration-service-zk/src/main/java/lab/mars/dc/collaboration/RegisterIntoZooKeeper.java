@@ -9,29 +9,22 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
-public class RegisterIntoZooKeeper extends Thread implements Watcher {
+public class RegisterIntoZooKeeper extends Thread  {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(RegisterIntoZooKeeper.class);
-    private static CountDownLatch countDownLatch = new CountDownLatch(1);
-    private String server;
     private ZooKeeper zooKeeper;
     private String value;
 
-    public void register(String value) throws IOException, KeeperException,
+    public void register(ZooKeeper zooKeeper,String value) throws IOException, KeeperException,
             InterruptedException {
-        zooKeeper = new ZooKeeper(server, 5000, new RegisterIntoZooKeeper());
+        this.zooKeeper=zooKeeper;
         this.value = value;
 
     }
 
     @Override
     public void run() {
-        try {
-            countDownLatch.await();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         try {
             zooKeeper.create("/server/" + value, "1".getBytes(),
                     Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
@@ -40,15 +33,5 @@ public class RegisterIntoZooKeeper extends Thread implements Watcher {
                 LOG.trace("error because of:", e);
             }
         }
-    }
-
-    @Override
-    public void process(WatchedEvent event) {
-        if (KeeperState.SyncConnected == event.getState()) {
-            countDownLatch.countDown();
-        }
-    }
-    public void setServer(String server) {
-        this.server = server;
     }
 }

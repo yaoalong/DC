@@ -51,11 +51,9 @@ public class LRUManage implements ConnectManager {
 
     @Override
     public synchronized void add(ChannelHandlerContext ctx) {
-        System.out.println("添加");
         connectMessages.put(ctx, true);
     }
     public synchronized  void remove(ChannelHandlerContext ctx){
-
         connectMessages.remove(ctx);
     }
 }

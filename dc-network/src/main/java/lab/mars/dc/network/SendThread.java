@@ -37,13 +37,16 @@ public class SendThread extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (!this.isInterrupted()) {
             synchronized (outgoingQueue) {
-                while (outgoingQueue.isEmpty()) {
+                if (outgoingQueue.isEmpty()) {
                     try {
                         outgoingQueue.wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        this.interrupt();
+                        continue;
+
                     }
                 }
                 DCPacket requestPacket = outgoingQueue.remove();
@@ -58,6 +61,7 @@ public class SendThread extends Thread {
                 }
             }
         }
+        System.out.println("FFF");
     }
 
     public void readResponse(DCPacket dcPacket) {
@@ -95,6 +99,8 @@ public class SendThread extends Thread {
         }
     }
     public void close(){
+        System.out.println("关闭");
         tcpClient.close();
+        this.interrupt();
     }
 }

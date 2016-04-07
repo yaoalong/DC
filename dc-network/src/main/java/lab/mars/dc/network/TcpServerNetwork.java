@@ -33,11 +33,12 @@ public class TcpServerNetwork {
         b.bind(host, port).addListener((ChannelFuture channelFuture) -> {
             channels.add(channelFuture.channel());
         });
+
     }
 
     public void close() {
         channels.forEach(channel -> channel.close());
-      //  NetworkEventLoopGroup.shutdown();
+       NetworkEventLoopGroup.shutdown();
     }
 
     public void setChannelChannelInitializer(

@@ -1,5 +1,6 @@
 package lab.mars.dc;
 
+import lab.mars.dc.collaboration.RegisterAndMonitorService;
 import lab.mars.dc.collaboration.ZKRegisterAndMonitorService;
 import lab.mars.dc.exception.DCException;
 import lab.mars.dc.impl.LogResourceServiceImpl;
@@ -10,6 +11,8 @@ import lab.mars.dc.persistence.DCDatabaseImpl;
 import lab.mars.dc.reflection.ResourceReflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Author:yaoalong.
@@ -26,6 +29,7 @@ public class DC {
     private SendThread sendThread;
 
     private volatile boolean isStart = false;
+    private RegisterAndMonitorService registerAndMonitorService;
 
     public static void main(String args[]) {
         DC dc = new DC();
@@ -46,6 +50,7 @@ public class DC {
                     System.out.println(((NameResultDO) resultDO).getName());
                 }
                 System.out.println("id:" + id + ":code:" + code.getCode() + ":resultDO:" + resultDO.toString());
+                dc.shutDown();
             }
         });
 
@@ -98,7 +103,7 @@ public class DC {
      *
      * @param args
      */
-    public void start(String args[]) throws DCConfig.ConfigException {
+    public void start(String args[]) throws DCConfig.ConfigException, IOException {
         if (args.length != 1) {
             LOG.error("no config file");
             System.exit(-1);
@@ -107,7 +112,7 @@ public class DC {
         dcConfig.parse(args[0]);
         LoadBalanceConsistentHash loadBalanceConsistentHash = new LoadBalanceConsistentHash();
         loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
-        ZKRegisterAndMonitorService registerAndMonitorService = new ZKRegisterAndMonitorService();
+       registerAndMonitorService = new ZKRegisterAndMonitorService();
         registerAndMonitorService.register(dcConfig.zooKeeperServer, dcConfig.myIp + ":" + dcConfig.port, loadBalanceConsistentHash);
         tcpServer = new TcpServer(dcConfig.myIp + ":" + dcConfig.port, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash, new DCDatabaseImpl());
 
@@ -127,7 +132,9 @@ public class DC {
 
     public void shutDown() {
         isStart = false;
-        tcpServer.close();
+        registerAndMonitorService.close();
         sendThread.close();
+        tcpServer.close();
+
     }
 }

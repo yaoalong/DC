@@ -23,23 +23,13 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
     private static final String ROOT_NODE = "/server";
     private static CountDownLatch countDownLatch = new CountDownLatch(1);
     private ZooKeeper zooKeeper;
-    /*
-     * zooKeeper服务器的地址
-     */
-    private String zooKeeperServer;
     private LoadBalanceService loadBalanceService;
-
+    public ZooKeeper_Monitor(ZooKeeper zooKeeper){
+        this.zooKeeper=zooKeeper;
+    }
     public void run() {
         try {
-            zooKeeper = new ZooKeeper(zooKeeperServer, 5000, this);
-            countDownLatch.await();
             getChildrens();
-
-            while (true) {
-                zooKeeper.getChildren("/server", this);
-                Thread.sleep(1000);
-            }
-
         } catch (Exception e) {
             e.printStackTrace();
             LOG.error("zookeepeer_monitor is error because of:",
@@ -49,10 +39,7 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
 
     @Override
     public void process(WatchedEvent event) {
-        if (KeeperState.SyncConnected == event.getState()
-                && EventType.NodeChildrenChanged != event.getType()) {
-            countDownLatch.countDown();
-        } else if (EventType.NodeChildrenChanged == event.getType()
+     if (EventType.NodeChildrenChanged == event.getType()
                 && event.getPath().startsWith("/server")) {
             try {
                 if (zooKeeper == null) {
@@ -77,10 +64,6 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
         loadBalanceService.setServers(serverStrings);
     }
 
-
-    public void setZooKeeperServer(String zooKeeperServer) {
-        this.zooKeeperServer = zooKeeperServer;
-    }
 
     public void setLoadBalanceService(LoadBalanceService loadBalanceService) {
         this.loadBalanceService = loadBalanceService;

@@ -26,8 +26,9 @@ public class TcpServer extends TcpServerNetwork {
 
     @Override
     public void close() {
-        super.close();
         dcProcessor.close();
+        super.close();
+
 
     }
 
