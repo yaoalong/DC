@@ -9,10 +9,15 @@ import lab.mars.dc.network.SendThread;
 import lab.mars.dc.network.TcpServer;
 import lab.mars.dc.persistence.DCDatabaseImpl;
 import lab.mars.dc.reflection.ResourceReflection;
+import org.apache.commons.lang3.StringUtils;
+import org.omg.CORBA.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+
+import static lab.mars.dc.OperateType.*;
+import static lab.mars.dc.exception.DCException.Code.*;
 
 /**
  * Author:yaoalong.
@@ -30,6 +35,36 @@ public class DC {
 
     private volatile boolean isStart = false;
     private RegisterAndMonitorService registerAndMonitorService;
+
+    /**
+     * 校验客户端参数
+     * @param requestPacket
+     * @throws DCException
+     */
+    private static void checkRequest(RequestPacket requestPacket)throws  DCException{
+        if(requestPacket==null||requestPacket.getOperateType()==null|| StringUtils.isBlank(requestPacket.getId())){
+            throw  new DCException(PARAM_ERROR);
+        }
+        OperateType operateType=requestPacket.getOperateType();
+        if(operateType==CREATE||operateType==DELETE||operateType==UPDATE){
+            if(requestPacket.getAsyncCallback()!=null&&!(requestPacket.getAsyncCallback() instanceof AsyncCallback.VoidCallback)){
+                throw new DCException(PARAM_ERROR);
+            }
+        }
+        else if(operateType==RETRIEVE){
+            if(requestPacket.getAsyncCallback()!=null&&!(requestPacket.getAsyncCallback() instanceof AsyncCallback.DataCallback)){
+                throw new DCException(PARAM_ERROR);
+            }
+        }
+        else if(operateType==SERVICE){
+            if(requestPacket.getAsyncCallback()!=null&&!(requestPacket.getAsyncCallback() instanceof AsyncCallback.ServiceCallback)){
+                throw new DCException(PARAM_ERROR);
+            }
+        }
+        else{
+            throw  new DCException(OPERATE_TYPE_NOT_SUPPORT);
+        }
+    }
 
     /**
      * 发送数据包的异步接口
