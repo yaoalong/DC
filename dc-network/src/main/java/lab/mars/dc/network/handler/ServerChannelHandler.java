@@ -25,7 +25,7 @@ public class ServerChannelHandler extends
         SimpleChannelInboundHandler<Object> {
     private static Logger LOG = LoggerFactory
             .getLogger(ServerChannelHandler.class);
-    private final LinkedList<DCPacket> pendingQueue = new LinkedList<DCPacket>();
+    private final LinkedList<DCPacket> pendingQueue = new LinkedList<>();
     private final ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
     private final String self;
     private final LoadBalanceService loadBalanceService;
@@ -59,12 +59,12 @@ public class ServerChannelHandler extends
             ctx.writeAndFlush(result);
         }
         catch (Exception e) {
-//            M2mReplyHeader m2mReplyHeader = new M2mReplyHeader(0, 0,
-//                    e.getCode());
-//            M2mRecord m2mRecord = null;
-//            M2mPacket responseM2mPacket = new M2mPacket(null, m2mReplyHeader,
-//                    null, m2mRecord);
-//            ctx.writeAndFlush(responseM2mPacket);
+            DCException.Code code= DCException.Code.SYSTEM_ERROR;
+            ResponsePacket responsePacket=new ResponsePacket();
+            responsePacket.setCode(code);
+            DCPacket result=new DCPacket();
+            result.setResponsePacket(responsePacket);
+            ctx.writeAndFlush(result);
         }
     }
 
@@ -95,7 +95,7 @@ public class ServerChannelHandler extends
      * @return
      */
     public boolean preProcessPacket(DCPacket dcPacket,
-                                    ChannelHandlerContext ctx) throws DCException {
+                                    ChannelHandlerContext ctx) throws Exception {
         if(dcPacket==null||dcPacket.getRequestPacket()==null|| StringUtils.isBlank(dcPacket.getRequestPacket().getId())){
             throw new DCException(DCException.Code.PARAM_ERROR);
         }
@@ -136,7 +136,7 @@ public class ServerChannelHandler extends
             }
             server = loadBalanceService.getServer(key);
         }
-        return false;
+       throw new Exception("系统错误");
     }
 
     /*

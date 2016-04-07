@@ -35,6 +35,7 @@ public class DCTest {
         dc.start(new String[]{"zoo1.cfg"});
         int number = 100000;
         long start = System.nanoTime();
+
         for (int i = 0; i < number; i++) {
             dc.send(generateDCRequestPacket(), new AsyncCallback.ServiceCallback() {
                 @Override

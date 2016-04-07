@@ -21,6 +21,8 @@ public class SendThread extends Thread {
     private final LinkedList<DCPacket> pendingQueue;
     private final LinkedList<DCPacket> outgoingQueue;
     private TcpClient tcpClient = new TcpClient();
+
+    private AtomicLong atomicLong=new AtomicLong(0);
     public SendThread(String serverIp, Integer port)  {
         tcpClient.connectionOne(serverIp, port);
         tcpClient.setSendThread(this);
@@ -46,7 +48,6 @@ public class SendThread extends Thread {
                         e.printStackTrace();
                         this.interrupt();
                         continue;
-
                     }
                 }
                 DCPacket requestPacket = outgoingQueue.remove();
@@ -97,8 +98,11 @@ public class SendThread extends Thread {
 
         }
     }
+
+    public long getNextCid(){
+        return atomicLong.getAndIncrement();
+    }
     public void close(){
-        System.out.println("关闭");
         tcpClient.close();
         this.interrupt();
     }

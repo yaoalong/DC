@@ -30,6 +30,11 @@ public class TcpClient extends TcpClientNetwork {
 
     }
 
+    /**
+     * @param msg
+     * @throws Exception
+     */
+    //TODO 需要优化成异步
     public void write(Object msg) throws Exception {
         while (channel == null) {
             try {
@@ -60,7 +65,9 @@ public class TcpClient extends TcpClientNetwork {
             }
         }
         if(!((DCPacket)msg).isFinished()){
-            pendingQueue.remove();
+            synchronized (pendingQueue){
+                pendingQueue.remove();
+            }
         }
         if(sendThread!=null){
             sendThread.readResponse((DCPacket)msg);
