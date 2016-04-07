@@ -1,6 +1,8 @@
 package lab.mars.dc.network;
 
 import lab.mars.dc.DCPacket;
+import lab.mars.dc.ResponsePacket;
+import lab.mars.dc.exception.DCException;
 import lab.mars.dc.network.initializer.PacketClientChannelInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +23,13 @@ public class TcpClient extends TcpClientNetwork {
 
     public TcpClient() {
         this(new LinkedList<>());
-        setSocketChannelChannelInitializer(new PacketClientChannelInitializer(
-                this));
+
     }
 
     public TcpClient(LinkedList<DCPacket> m2mPacket) {
         this.pendingQueue = m2mPacket;
+        setSocketChannelChannelInitializer(new PacketClientChannelInitializer(
+                this));
 
     }
 
@@ -34,15 +37,15 @@ public class TcpClient extends TcpClientNetwork {
      * @param msg
      * @throws Exception
      */
-    //TODO 需要优化成异步
     public void write(Object msg) throws Exception {
-        while (channel == null) {
+        if (channel == null) {
             try {
                 reentrantLock.lock();
                 condition.await();
             } catch (InterruptedException e) {
-                LOG.info("write error:", e);
-                e.printStackTrace();
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("write error:", e);
+                }
             } finally {
                 reentrantLock.unlock();
             }
@@ -55,22 +58,25 @@ public class TcpClient extends TcpClientNetwork {
                 pendingQueue.add((DCPacket) msg);
             }
         }
-        if(!channel.isActive()){
-            throw  new Exception("channel is closed");
+        if (!channel.isActive()) {
+            throw new Exception("channel is closed");
         }
         channel.writeAndFlush(msg);
-        synchronized (msg){
-            if(!((DCPacket)msg).isFinished()){
+        synchronized (msg) {
+            if (!((DCPacket) msg).isFinished()) {
                 msg.wait(3000);
             }
         }
-        if(!((DCPacket)msg).isFinished()){
-            synchronized (pendingQueue){
+        if (!((DCPacket) msg).isFinished()) {
+            synchronized (pendingQueue) {
                 pendingQueue.remove();
             }
+            ResponsePacket responsePacket=new ResponsePacket();
+            responsePacket.setCode(DCException.Code.SYSTEM_ERROR);
+            ((DCPacket)msg).setResponsePacket(responsePacket);
         }
-        if(sendThread!=null){
-            sendThread.readResponse((DCPacket)msg);
+        if (sendThread != null) {
+            sendThread.readResponse((DCPacket) msg);
         }
 
     }

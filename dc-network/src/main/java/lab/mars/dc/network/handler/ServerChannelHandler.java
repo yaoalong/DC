@@ -135,6 +135,7 @@ public class ServerChannelHandler extends
                 e.printStackTrace();
             }
             server = loadBalanceService.getServer(key);
+            System.out.println("server"+server);
         }
        throw new Exception("系统错误");
     }

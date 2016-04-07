@@ -45,7 +45,6 @@ public class DCDatabaseImpl implements DCDatabaseService {
     public DCDatabaseImpl() {
         this(false, "tests", "dc", "192.168.10.124");
     }
-
     public DCDatabaseImpl(boolean clean, String keyspace, String table, String node) {
         this.clean = clean;
         this.keyspace = keyspace;

@@ -18,11 +18,11 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class TcpClientNetwork {
 
-    protected Channel channel;
+    protected  Channel channel;
     protected ReentrantLock reentrantLock = new ReentrantLock();
     protected Condition condition = reentrantLock.newCondition();
     protected volatile boolean isSuccess = true;
-    private ChannelInitializer<SocketChannel> socketChannelChannelInitializer;
+    private  ChannelInitializer<SocketChannel> socketChannelChannelInitializer;
 
     public void connectionOne(String host, int port) {
 

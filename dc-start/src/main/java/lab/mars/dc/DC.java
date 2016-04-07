@@ -63,18 +63,19 @@ public class DC {
         }
         DCConfig dcConfig = new DCConfig();
         dcConfig.parse(args[0]);
+        String ipAndPort=dcConfig.myIp+":"+dcConfig.port;
         LoadBalanceConsistentHash loadBalanceConsistentHash = new LoadBalanceConsistentHash();
         loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
-        registerAndMonitorService = new ZKRegisterAndMonitorService();
-        registerAndMonitorService.register(dcConfig.zooKeeperServer, dcConfig.myIp + ":" + dcConfig.port, loadBalanceConsistentHash);
-        tcpServer = new TcpServer(dcConfig.myIp + ":" + dcConfig.port, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash, new DCDatabaseImpl());
-
+        tcpServer = new TcpServer(ipAndPort, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash, new DCDatabaseImpl());
         try {
             tcpServer.bind(dcConfig.myIp, dcConfig.port);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+
+        registerAndMonitorService = new ZKRegisterAndMonitorService();
+        registerAndMonitorService.register(dcConfig.zooKeeperServer,ipAndPort, loadBalanceConsistentHash);
         sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
 
         sendThread.start();

@@ -16,6 +16,7 @@ public class TcpServer extends TcpServerNetwork {
     private DCProcessor dcProcessor;
 
     public TcpServer(String self, Integer numberOfConnections, LoadBalanceService loadBalanceService, DCDatabaseService dcDatabaseService) {
+        System.out.println("GG"+numberOfConnections);
         LRUManage lruManage = new LRUManage(numberOfConnections);
         dcProcessor = new DCProcessor(dcDatabaseService);
         setChannelChannelInitializer(new PacketServerChannelInitializer(self,
