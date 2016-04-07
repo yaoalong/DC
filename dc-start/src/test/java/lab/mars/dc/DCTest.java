@@ -17,15 +17,16 @@ public class DCTest {
      * 168s 10万条服务
      * @return
      */
+    static int i=0;
     public static RequestPacket generateDCRequestPacket() {
         RequestPacket requestPacket = new RequestPacket();
-        requestPacket.setId("11133");
+        requestPacket.setId("11133"+(++i));
 
         LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
         logResourceService.setId(1222);
         byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
         requestPacket.setResourceService(bytes);
-        requestPacket.setOperateType(OperateType.SERVICE);
+        requestPacket.setOperateType(OperateType.CREATE);
         return requestPacket;
     }
 
@@ -33,16 +34,16 @@ public class DCTest {
     public void test() throws IOException, DCConfig.ConfigException {
         DC dc = new DC();
         dc.start(new String[]{"zoo1.cfg"});
-        int number = 100000;
+        int number = 10000;
         long start = System.nanoTime();
 
         for (int i = 0; i < number; i++) {
-            dc.send(generateDCRequestPacket(), new AsyncCallback.ServiceCallback() {
+            dc.send(generateDCRequestPacket(), new AsyncCallback.VoidCallback() {
                 @Override
-                public void processResult(DCException.Code code, String id, ResultDO resultDO) {
-                    if (resultDO instanceof NameResultDO) {
+                public void processResult(DCException.Code code, String id) {
+                 //   if (resultDO instanceof NameResultDO) {
                         // System.out.println(((NameResultDO) resultDO).getName());
-                    }
+                   // }
                     // System.out.println("id:" + id + ":code:" + code.getCode() + ":resultDO:" + resultDO.toString());
                     Util.atomicInteger.getAndIncrement();
                 }

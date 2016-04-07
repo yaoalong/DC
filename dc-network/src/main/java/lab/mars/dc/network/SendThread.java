@@ -45,7 +45,6 @@ public class SendThread extends Thread {
                     try {
                         outgoingQueue.wait();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
                         this.interrupt();
                         continue;
                     }

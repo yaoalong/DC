@@ -31,53 +31,6 @@ public class DC {
     private volatile boolean isStart = false;
     private RegisterAndMonitorService registerAndMonitorService;
 
-    public static void main(String args[]) {
-        DC dc = new DC();
-        try {
-            dc.start(args);
-        } catch (DCConfig.ConfigException e) {
-            LOG.error("Invalid config, exiting abnormally", e);
-            System.err.println("Invalid config, exiting abnormally");
-            System.exit(2);
-        } catch (Exception e) {
-            LOG.error("Unexpected exception, exiting abnormally", e);
-            System.exit(1);
-        }
-        dc.send(generateDCRequestPacket(), new AsyncCallback.ServiceCallback() {
-            @Override
-            public void processResult(DCException.Code code, String id, ResultDO resultDO) {
-                if (resultDO instanceof NameResultDO) {
-                    System.out.println(((NameResultDO) resultDO).getName());
-                }
-                System.out.println("id:" + id + ":code:" + code.getCode() + ":resultDO:" + resultDO.toString());
-                dc.shutDown();
-            }
-        });
-
-    }
-
-    public static RequestPacket generateDCRequestPacket() {
-        RequestPacket requestPacket = new RequestPacket();
-        requestPacket.setId("11133");
-
-        LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
-        logResourceService.setId(1222);
-        byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
-        requestPacket.setResourceService(bytes);
-        requestPacket.setOperateType(OperateType.SERVICE);
-        return requestPacket;
-    }
-
-    /**
-     * 发送数据包的同步接口
-     *
-     * @param requestPacket
-     * @return
-     */
-    public ResponsePacket send(RequestPacket requestPacket) {
-        return null;
-    }
-
     /**
      * 发送数据包的异步接口
      *
@@ -112,10 +65,9 @@ public class DC {
         dcConfig.parse(args[0]);
         LoadBalanceConsistentHash loadBalanceConsistentHash = new LoadBalanceConsistentHash();
         loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
-       registerAndMonitorService = new ZKRegisterAndMonitorService();
+        registerAndMonitorService = new ZKRegisterAndMonitorService();
         registerAndMonitorService.register(dcConfig.zooKeeperServer, dcConfig.myIp + ":" + dcConfig.port, loadBalanceConsistentHash);
         tcpServer = new TcpServer(dcConfig.myIp + ":" + dcConfig.port, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash, new DCDatabaseImpl());
-
 
         try {
             tcpServer.bind(dcConfig.myIp, dcConfig.port);
