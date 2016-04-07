@@ -27,7 +27,8 @@ public class ResourceOperateTest extends DCTestBase {
         logResourceService.setId(1222);
         byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
         requestPacket.setResourceService(bytes);
-        dc.send(requestPacket, asyncCallback);
+        requestPacket.setAsyncCallback(asyncCallback);
+        dc.send(requestPacket);
     }
 
     /**
@@ -38,7 +39,8 @@ public class ResourceOperateTest extends DCTestBase {
         RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("/ces1/ae1");
         requestPacket.setOperateType(OperateType.DELETE);
-        dc.send(requestPacket, asyncCallback);
+        requestPacket.setAsyncCallback(asyncCallback);
+        dc.send(requestPacket);
     }
 
     /**
@@ -53,7 +55,8 @@ public class ResourceOperateTest extends DCTestBase {
         logResourceService.setId(1222);
         byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
         requestPacket.setResourceService(bytes);
-        dc.send(requestPacket, asyncCallback);
+        requestPacket.setAsyncCallback(asyncCallback);
+        dc.send(requestPacket);
         
     }
 
@@ -65,7 +68,7 @@ public class ResourceOperateTest extends DCTestBase {
         RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("/ces1/ae1");
         requestPacket.setOperateType(OperateType.RETRIEVE);
-        dc.send(requestPacket, new AsyncCallback.DataCallback() {
+        requestPacket.setAsyncCallback(new AsyncCallback.DataCallback() {
             @Override
             public void processResult(DCException.Code code, String id, ResourceService resoureService) {
                 if(DCException.Code.OK==code){
@@ -76,6 +79,7 @@ public class ResourceOperateTest extends DCTestBase {
                 }
             }
         });
+        dc.send(requestPacket);
       
     }
 

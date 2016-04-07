@@ -17,7 +17,7 @@ public class DCSendPacketTest extends  DCTestBase{
         RequestPacket requestPacket=new RequestPacket();
         requestPacket.setId("/ces1/ae2");
         requestPacket.setOperateType(OperateType.CREATE);
-
-        dc.send(requestPacket,asyncCallback);
+        requestPacket.setAsyncCallback(asyncCallback);
+        dc.send(requestPacket);
     }
 }

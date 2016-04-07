@@ -35,9 +35,8 @@ public class DC {
      * 发送数据包的异步接口
      *
      * @param requestPacket
-     * @param asyncCallback
      */
-    public void send(RequestPacket requestPacket, AsyncCallback asyncCallback) {
+    public void send(RequestPacket requestPacket) {
         while (!isStart) {
             try {
                 Thread.sleep(1000);
@@ -46,7 +45,6 @@ public class DC {
             }
         }
         DCPacket dcPacket = new DCPacket();
-        requestPacket.setAsyncCallback(asyncCallback);
         dcPacket.setRequestPacket(requestPacket);
         sendThread.send(dcPacket);
     }
