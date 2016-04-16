@@ -119,8 +119,7 @@ public class ServerChannelHandler extends
                 try {
                     TcpClient tcpClient = new TcpClient(pendingQueue);
                     String[] splitStrings = spilitString(server);
-                    tcpClient.connectionOne(splitStrings[0],
-                            Integer.valueOf(splitStrings[1]));
+                    tcpClient.connectionOne(splitStrings[0],Integer.parseInt(splitStrings[1]));
                     tcpClient.write(dcPacket);
                     ctx.writeAndFlush(dcPacket);
                     ipAndTcpClient.put(server, tcpClient);
