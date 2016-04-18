@@ -3,21 +3,19 @@ package lab.mars.dc;
 import lab.mars.dc.collaboration.RegisterAndMonitorService;
 import lab.mars.dc.collaboration.ZKRegisterAndMonitorService;
 import lab.mars.dc.exception.DCException;
-import lab.mars.dc.impl.LogResourceServiceImpl;
 import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
 import lab.mars.dc.network.SendThread;
 import lab.mars.dc.network.TcpServer;
 import lab.mars.dc.persistence.DCDatabaseImpl;
-import lab.mars.dc.reflection.ResourceReflection;
 import org.apache.commons.lang3.StringUtils;
-import org.omg.CORBA.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 import static lab.mars.dc.OperateType.*;
-import static lab.mars.dc.exception.DCException.Code.*;
+import static lab.mars.dc.exception.DCException.Code.OPERATE_TYPE_NOT_SUPPORT;
+import static lab.mars.dc.exception.DCException.Code.PARAM_ERROR;
 
 /**
  * Author:yaoalong.
@@ -38,31 +36,29 @@ public class DC {
 
     /**
      * 校验客户端参数
+     *
      * @param requestPacket
      * @throws DCException
      */
-    private static void checkRequest(RequestPacket requestPacket)throws  DCException{
-        if(requestPacket==null||requestPacket.getOperateType()==null|| StringUtils.isBlank(requestPacket.getId())){
-            throw  new DCException(PARAM_ERROR);
+    private static void checkRequest(RequestPacket requestPacket) throws DCException {
+        if (requestPacket == null || requestPacket.getOperateType() == null || StringUtils.isBlank(requestPacket.getId())) {
+            throw new DCException(PARAM_ERROR);
         }
-        OperateType operateType=requestPacket.getOperateType();
-        if(operateType==CREATE||operateType==DELETE||operateType==UPDATE){
-            if(requestPacket.getAsyncCallback()!=null&&!(requestPacket.getAsyncCallback() instanceof AsyncCallback.VoidCallback)){
+        OperateType operateType = requestPacket.getOperateType();
+        if (operateType == CREATE || operateType == DELETE || operateType == UPDATE) {
+            if (requestPacket.getAsyncCallback() != null && !(requestPacket.getAsyncCallback() instanceof AsyncCallback.VoidCallback)) {
                 throw new DCException(PARAM_ERROR);
             }
-        }
-        else if(operateType==RETRIEVE){
-            if(requestPacket.getAsyncCallback()!=null&&!(requestPacket.getAsyncCallback() instanceof AsyncCallback.DataCallback)){
+        } else if (operateType == RETRIEVE) {
+            if (requestPacket.getAsyncCallback() != null && !(requestPacket.getAsyncCallback() instanceof AsyncCallback.DataCallback)) {
                 throw new DCException(PARAM_ERROR);
             }
-        }
-        else if(operateType==SERVICE){
-            if(requestPacket.getAsyncCallback()!=null&&!(requestPacket.getAsyncCallback() instanceof AsyncCallback.ServiceCallback)){
+        } else if (operateType == SERVICE) {
+            if (requestPacket.getAsyncCallback() != null && !(requestPacket.getAsyncCallback() instanceof AsyncCallback.ServiceCallback)) {
                 throw new DCException(PARAM_ERROR);
             }
-        }
-        else{
-            throw  new DCException(OPERATE_TYPE_NOT_SUPPORT);
+        } else {
+            throw new DCException(OPERATE_TYPE_NOT_SUPPORT);
         }
     }
 
@@ -92,11 +88,11 @@ public class DC {
     public void start(String args[]) throws DCConfig.ConfigException, IOException {
         if (args.length != 1) {
             LOG.error("no config file");
-            throw  new RuntimeException();
+            throw new RuntimeException();
         }
         DCConfig dcConfig = new DCConfig();
         dcConfig.parse(args[0]);
-        String ipAndPort=dcConfig.myIp+":"+dcConfig.port;
+        String ipAndPort = dcConfig.myIp + ":" + dcConfig.port;
         LoadBalanceConsistentHash loadBalanceConsistentHash = new LoadBalanceConsistentHash();
         loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
         tcpServer = new TcpServer(ipAndPort, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash, new DCDatabaseImpl());
@@ -108,7 +104,7 @@ public class DC {
 
 
         registerAndMonitorService = new ZKRegisterAndMonitorService();
-        registerAndMonitorService.register(dcConfig.zooKeeperServer,ipAndPort, loadBalanceConsistentHash);
+        registerAndMonitorService.register(dcConfig.zooKeeperServer, ipAndPort, loadBalanceConsistentHash);
         sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
 
         sendThread.start();
