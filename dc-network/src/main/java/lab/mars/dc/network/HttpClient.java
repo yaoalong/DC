@@ -88,7 +88,6 @@ public class HttpClient {
             }
         }
         channel.writeAndFlush(msg);
-        System.out.println("饭是钢");
 
     }
 

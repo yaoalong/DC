@@ -25,6 +25,7 @@ public class ResourceOperateTest extends DCTestBase {
         requestPacket.setOperateType(OperateType.CREATE);
         LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
         logResourceService.setId(1222);
+        logResourceService.setRelatedResource(new String[]{"/cse/alle"});
         byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
         requestPacket.setResourceService(bytes);
         requestPacket.setAsyncCallback(asyncCallback);
@@ -73,6 +74,9 @@ public class ResourceOperateTest extends DCTestBase {
             public void processResult(DCException.Code code, String id, ResourceService resoureService) {
                 if(DCException.Code.OK==code){
                     System.out.println("success");
+                    for(String string:resoureService.getRelatedResource()){
+                        System.out.println("related resource:"+string);
+                    }
                 }
                 else{
                     System.out.println("error"+code);

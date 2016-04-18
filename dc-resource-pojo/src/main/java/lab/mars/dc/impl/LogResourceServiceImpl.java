@@ -10,7 +10,7 @@ import lab.mars.dc.ResultDO;
  * Date:2016/4/2.
  * Email:yaoalong@foxmail.com
  */
-public class LogResourceServiceImpl implements ResourceService {
+public class LogResourceServiceImpl extends ResourceService {
 
     public int id;
     @Override
@@ -22,12 +22,11 @@ public class LogResourceServiceImpl implements ResourceService {
     public void start() {
 
     }
-
-    @Override
+@Override
     public ResultDO service(DataContent dataContent) {
-        System.out.println("my Id:"+id);
-        NameResultDO nameResultDO=new NameResultDO();
-        nameResultDO.setName("id+"+"long");
+        System.out.println("my Id:" + id);
+        NameResultDO nameResultDO = new NameResultDO();
+        nameResultDO.setName("id+" + "long");
         return nameResultDO;
     }
 

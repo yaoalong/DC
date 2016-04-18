@@ -89,7 +89,7 @@ public class DCProcessor {
             try {
                 ResourceServiceDO resourceServiceDO = dcDatabaseService.retrieve(requestPacket.getId());
                 if (resourceServiceDO != null) {
-                    responsePacket.setResourceService(ResourceReflection.serializeKryo(resourceServiceDO));
+                    responsePacket.setResourceService(resourceServiceDO.getData());
                 }
 
             } catch (DCException e) {
