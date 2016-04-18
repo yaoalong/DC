@@ -32,10 +32,6 @@ public class DCTest {
         requestPacket.setAsyncCallback(new AsyncCallback.VoidCallback() {
             @Override
             public void processResult(DCException.Code code, String id) {
-                //   if (resultDO instanceof NameResultDO) {
-                // System.out.println(((NameResultDO) resultDO).getName());
-                // }
-                // System.out.println("id:" + id + ":code:" + code.getCode() + ":resultDO:" + resultDO.toString());
                 Util.atomicInteger.getAndIncrement();
             }
         });

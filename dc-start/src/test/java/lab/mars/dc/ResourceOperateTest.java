@@ -3,7 +3,6 @@ package lab.mars.dc;
 import lab.mars.dc.exception.DCException;
 import lab.mars.dc.impl.LogResourceServiceImpl;
 import lab.mars.dc.reflection.ResourceReflection;
-
 import org.junit.Test;
 
 /**
@@ -15,34 +14,6 @@ import org.junit.Test;
 
 public class ResourceOperateTest extends DCTestBase {
 
-    /**
-     * 添加服务资源
-     */
-    @Test
-    public void testAddResource() {
-        RequestPacket requestPacket = new RequestPacket();
-        requestPacket.setId("/ces1/ae1");
-        requestPacket.setOperateType(OperateType.CREATE);
-        LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
-        logResourceService.setId(1222);
-        logResourceService.setRelatedResource(new String[]{"/cse/alle"});
-        byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
-        requestPacket.setResourceService(bytes);
-        requestPacket.setAsyncCallback(asyncCallback);
-        dc.send(requestPacket);
-    }
-
-    /**
-     * 删除服务资源测试
-     */
-    @Test
-    public void testDeleteResource() {
-        RequestPacket requestPacket = new RequestPacket();
-        requestPacket.setId("/ces1/ae1");
-        requestPacket.setOperateType(OperateType.DELETE);
-        requestPacket.setAsyncCallback(asyncCallback);
-        dc.send(requestPacket);
-    }
 
     /**
      * 更新服务资源测试
@@ -50,7 +21,7 @@ public class ResourceOperateTest extends DCTestBase {
     @Test
     public void testUpdateResource() {
         RequestPacket requestPacket = new RequestPacket();
-        requestPacket.setId("/ces1/ae1");
+        requestPacket.setId("/root");
         requestPacket.setOperateType(OperateType.UPDATE);
         LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
         logResourceService.setId(1222);
@@ -58,7 +29,7 @@ public class ResourceOperateTest extends DCTestBase {
         requestPacket.setResourceService(bytes);
         requestPacket.setAsyncCallback(asyncCallback);
         dc.send(requestPacket);
-        
+
     }
 
     /**
@@ -67,24 +38,23 @@ public class ResourceOperateTest extends DCTestBase {
     @Test
     public void retrieveResource() {
         RequestPacket requestPacket = new RequestPacket();
-        requestPacket.setId("/ces1/ae1");
+        requestPacket.setId("/root");
         requestPacket.setOperateType(OperateType.RETRIEVE);
         requestPacket.setAsyncCallback(new AsyncCallback.DataCallback() {
             @Override
             public void processResult(DCException.Code code, String id, ResourceService resoureService) {
-                if(DCException.Code.OK==code){
+                if (DCException.Code.OK == code) {
                     System.out.println("success");
-                    for(String string:resoureService.getRelatedResource()){
-                        System.out.println("related resource:"+string);
+                    for (String string : resoureService.getRelatedResource()) {
+                        System.out.println("related resource:" + string);
                     }
-                }
-                else{
-                    System.out.println("error"+code);
+                } else {
+                    System.out.println("error" + code);
                 }
             }
         });
         dc.send(requestPacket);
-      
+
     }
 
     /**
@@ -93,6 +63,20 @@ public class ResourceOperateTest extends DCTestBase {
     @Test
     public void testCalcuateResource() {
 
-        //TODO 对计算结果进行处理
+        RequestPacket requestPacket = new RequestPacket();
+        requestPacket.setId("/root");
+        requestPacket.setOperateType(OperateType.SERVICE);
+        requestPacket.setAsyncCallback(new AsyncCallback.ServiceCallback() {
+            @Override
+            public void processResult(DCException.Code code, String id, ResultDO resultDO) {
+                if (DCException.Code.OK == code) {
+                    System.out.println("success");
+
+                } else {
+                    System.out.println("error" + code);
+                }
+            }
+        });
+        dc.send(requestPacket);
     }
 }

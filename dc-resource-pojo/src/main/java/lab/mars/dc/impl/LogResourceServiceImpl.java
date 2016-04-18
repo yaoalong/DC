@@ -13,6 +13,7 @@ import lab.mars.dc.ResultDO;
 public class LogResourceServiceImpl extends ResourceService {
 
     public int id;
+
     @Override
     public void init() {
 
@@ -22,7 +23,8 @@ public class LogResourceServiceImpl extends ResourceService {
     public void start() {
 
     }
-@Override
+
+    @Override
     public ResultDO service(DataContent dataContent) {
         System.out.println("my Id:" + id);
         NameResultDO nameResultDO = new NameResultDO();

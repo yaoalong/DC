@@ -11,14 +11,14 @@ public abstract class ResourceService implements Serializable {
 
     public String[] relatedResource;
 
-   public abstract void init();
+    public abstract void init();
 
 
     public abstract void start();
 
-    public  abstract ResultDO service(DataContent dataContent);
+    public abstract ResultDO service(DataContent dataContent);
 
-    public  abstract void shutdown();
+    public abstract void shutdown();
 
     public String[] getRelatedResource() {
         return relatedResource;
