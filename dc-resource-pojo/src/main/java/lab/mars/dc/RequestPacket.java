@@ -48,7 +48,7 @@ public class RequestPacket implements Serializable{
     }
 
     public void setResourceService(byte[] resourceService) {
-        this.resourceService = resourceService;
+        this.resourceService =resourceService;
     }
 
     public AsyncCallback getAsyncCallback() {
