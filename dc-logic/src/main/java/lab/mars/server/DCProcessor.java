@@ -81,7 +81,7 @@ public class DCProcessor {
             } catch (DCException e) {
                 code = e.getCode();
             }
-            if (resourceServices.get(requestPacket.getId())!=null) {
+            if (resourceServices.get(requestPacket.getId()) != null) {
                 resourceServices.get(requestPacket.getId()).shutdown();
                 resourceServices.remove(requestPacket.getId());
             }
