@@ -5,6 +5,8 @@ import lab.mars.dc.impl.LogResourceServiceImpl;
 import lab.mars.dc.reflection.ResourceReflection;
 import org.junit.Test;
 
+import static lab.mars.dc.exception.DCException.Code.*;
+
 /**
  * Author:yaoalong.
  * Date:2016/3/25.
@@ -43,7 +45,7 @@ public class ResourceOperateTest extends DCTestBase {
         requestPacket.setAsyncCallback(new AsyncCallback.DataCallback() {
             @Override
             public void processResult(DCException.Code code, String id, ResourceService resoureService) {
-                if (DCException.Code.OK == code) {
+                if (OK == code) {
                     System.out.println("success");
                     for (String string : resoureService.getRelatedResource()) {
                         System.out.println("related resource:" + string);
@@ -69,8 +71,11 @@ public class ResourceOperateTest extends DCTestBase {
         requestPacket.setAsyncCallback(new AsyncCallback.ServiceCallback() {
             @Override
             public void processResult(DCException.Code code, String id, ResultDO resultDO) {
-                if (DCException.Code.OK == code) {
+                if (OK == code) {
                     System.out.println("success");
+                    if(resultDO instanceof  NameResultDO){
+                        System.out.println("name:"+((NameResultDO)resultDO).getName());
+                    }
 
                 } else {
                     System.out.println("error" + code);

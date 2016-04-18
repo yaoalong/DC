@@ -28,7 +28,6 @@ public class DCTestBase {
                 LOG.info("error" + code);
             }
         }
-
     };
 
     @Before
