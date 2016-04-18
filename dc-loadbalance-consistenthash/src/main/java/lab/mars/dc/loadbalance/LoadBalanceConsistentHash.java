@@ -3,6 +3,7 @@ package lab.mars.dc.loadbalance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -42,7 +43,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     private static long md5HashingAlg(String key) {
         MessageDigest md5 = MD5.get();
         md5.reset();
-        md5.update(key.getBytes());
+        md5.update(key.getBytes(Charset.forName("utf-8")));
         byte[] bKey = md5.digest();
         long res = ((long) (bKey[3] & 0xFF) << 24)
                 | ((long) (bKey[2] & 0xFF) << 16)
@@ -66,7 +67,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
         MessageDigest md5 = MD5.get();
         for (int i = 0; i < servers.size(); i++) {
             for (long j = 0; j < numOfVirtualNode; j++) {
-                byte[] d = md5.digest((servers.get(i) + "-" + j).getBytes());
+                byte[] d = md5.digest((servers.get(i) + "-" + j).getBytes(Charset.forName("utf-8")));
                 Long k = ((long) (d[3] & 0xFF) << 24)
                         | ((long) (d[2] & 0xFF) << 16)
                         | ((long) (d[1] & 0xFF) << 8)

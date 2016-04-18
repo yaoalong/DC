@@ -64,7 +64,7 @@ public class DCProcessor {
             try {
                 dcDatabaseService.update(requestPacket.getId(), resourceServiceDO);
                 ResourceService resourceService = (ResourceService) ResourceReflection.deserializeKryo(requestPacket.getResourceService());
-                if (resourceServices.contains(requestPacket.getId())) {
+                if (resourceServices.containsKey(requestPacket.getId())) {
                     resourceServices.get(requestPacket.getId()).shutdown();
                     resourceService.start();
                 }
@@ -81,7 +81,7 @@ public class DCProcessor {
             } catch (DCException e) {
                 code = e.getCode();
             }
-            if (resourceServices.contains(requestPacket.getId())) {
+            if (resourceServices.get(requestPacket.getId())!=null) {
                 resourceServices.get(requestPacket.getId()).shutdown();
                 resourceServices.remove(requestPacket.getId());
             }

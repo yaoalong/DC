@@ -92,7 +92,7 @@ public class DC {
     public void start(String args[]) throws DCConfig.ConfigException, IOException {
         if (args.length != 1) {
             LOG.error("no config file");
-            System.exit(-1);
+            throw  new RuntimeException();
         }
         DCConfig dcConfig = new DCConfig();
         dcConfig.parse(args[0]);

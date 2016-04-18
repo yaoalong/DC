@@ -38,7 +38,7 @@ public class TcpClient extends TcpClientNetwork {
      * @throws Exception
      */
     public void write(Object msg) throws Exception {
-        if (channel == null) {
+        while (channel == null) {
             try {
                 reentrantLock.lock();
                 condition.await();

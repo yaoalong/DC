@@ -29,7 +29,6 @@ public class HttpClient {
     protected Channel channel;
     protected ReentrantLock reentrantLock = new ReentrantLock();
     protected Condition condition = reentrantLock.newCondition();
-    protected volatile boolean isSuccess = true;
 
     public static HttpRequest makeRequest(HttpMethod method,
                                           String rawPath,
@@ -51,6 +50,12 @@ public class HttpClient {
         return request;
     }
 
+    public static void main(String args[]) throws Exception {
+        HttpClient httpClient = new HttpClient();
+        httpClient.connectionOne("localhost", 2185);
+        httpClient.write(makeRequest(HttpMethod.GET, "/", null, "long"));
+    }
+
     public void connectionOne(String host, int port) {
 
         Bootstrap bootstrap = new Bootstrap();
@@ -63,9 +68,6 @@ public class HttpClient {
             reentrantLock.lock();
             channel = future.channel();
 
-            if (!future.isSuccess()) {
-                isSuccess = false;
-            }
             condition.signalAll();
             reentrantLock.unlock();
         });
@@ -78,7 +80,7 @@ public class HttpClient {
      * @throws Exception
      */
     public void write(Object msg) throws Exception {
-        if (channel == null) {
+        while (channel == null) {
             try {
                 reentrantLock.lock();
                 condition.await();
@@ -95,10 +97,5 @@ public class HttpClient {
         if (channel != null) {
             channel.close();
         }
-    }
-    public static void main(String args[]) throws Exception {
-        HttpClient httpClient=new HttpClient();
-        httpClient.connectionOne("localhost",2185);
-        httpClient.write(makeRequest(HttpMethod.GET,"/",null,"long"));
     }
 }

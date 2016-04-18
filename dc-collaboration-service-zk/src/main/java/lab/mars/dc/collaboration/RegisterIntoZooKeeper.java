@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 
 public class RegisterIntoZooKeeper extends Thread  {
@@ -26,7 +27,7 @@ public class RegisterIntoZooKeeper extends Thread  {
     @Override
     public void run() {
         try {
-            zooKeeper.create("/server/" + value, "1".getBytes(),
+            zooKeeper.create("/server/" + value, "1".getBytes(Charset.forName("utf-8")),
                     Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (KeeperException | InterruptedException e) {
             if(LOG.isTraceEnabled()){
