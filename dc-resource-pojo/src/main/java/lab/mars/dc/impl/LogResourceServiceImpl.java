@@ -13,6 +13,7 @@ import lab.mars.dc.ResultDO;
 public class LogResourceServiceImpl implements ResourceService {
 
     public int id;
+    private String[] relatedServers;
 
     @Override
     public void init() {
@@ -39,12 +40,12 @@ public class LogResourceServiceImpl implements ResourceService {
 
     @Override
     public String[] getRelatedResources() {
-        return new String[0];
+        return relatedServers;
     }
 
     @Override
     public void setRelatedResources(String[] relatedResources) {
-
+        this.relatedServers = relatedResources;
     }
 
     public int getId() {

@@ -37,7 +37,7 @@ public class DCProcessor {
      * @param dcPacket
      * @param channel
      */
-    public void receiveMessage(DCPacket dcPacket, Channel channel) {
+    public DCPacket receiveMessage(DCPacket dcPacket, Channel channel) {
         Code code = OK;
         ResponsePacket responsePacket = new ResponsePacket();
         RequestPacket requestPacket = dcPacket.getRequestPacket();
@@ -124,7 +124,10 @@ public class DCProcessor {
         responsePacket.setCode(code);
         DCPacket result = new DCPacket();
         result.setResponsePacket(responsePacket);
-        channel.writeAndFlush(result);
+        if(channel!=null) {
+            channel.writeAndFlush(result);
+        }
+        return result;
     }
 
     public void close() {

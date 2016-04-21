@@ -16,7 +16,7 @@ public class RegisterIntoZooKeeper extends Thread  {
             .getLogger(RegisterIntoZooKeeper.class);
     private ZooKeeper zooKeeper;
     private String value;
-
+    private static final String ROOT="/server/";
     public void register(ZooKeeper zooKeeper,String value) throws IOException, KeeperException,
             InterruptedException {
         this.zooKeeper=zooKeeper;
@@ -27,7 +27,7 @@ public class RegisterIntoZooKeeper extends Thread  {
     @Override
     public void run() {
         try {
-            zooKeeper.create("/server/" + value, "1".getBytes(Charset.forName("utf-8")),
+            zooKeeper.create(ROOT + value, "1".getBytes(Charset.forName("utf-8")),
                     Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (KeeperException | InterruptedException e) {
             if(LOG.isTraceEnabled()){

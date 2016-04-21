@@ -7,6 +7,8 @@ import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
 import lab.mars.dc.network.SendThread;
 import lab.mars.dc.network.TcpServer;
 import lab.mars.dc.persistence.DCDatabaseImpl;
+import lab.mars.dc.server.DCHandler;
+import lab.mars.server.DCProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +31,7 @@ public class DC {
     private TcpServer tcpServer;
 
 
-    private SendThread sendThread;
+    private DCHandler dcHandler;
 
     private volatile boolean isStart = false;
     private RegisterAndMonitorService registerAndMonitorService;
@@ -67,6 +69,7 @@ public class DC {
      *
      * @param requestPacket
      */
+    //TODO
     public void send(RequestPacket requestPacket) {
         while (!isStart) {
             try {
@@ -77,7 +80,7 @@ public class DC {
         }
         DCPacket dcPacket = new DCPacket();
         dcPacket.setRequestPacket(requestPacket);
-        sendThread.send(dcPacket);
+        dcHandler.receiveMessage(dcPacket);
     }
 
     /**
@@ -101,13 +104,9 @@ public class DC {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
         registerAndMonitorService = new ZKRegisterAndMonitorService();
         registerAndMonitorService.register(dcConfig.zooKeeperServer, ipAndPort, loadBalanceConsistentHash);
-        sendThread = new SendThread(dcConfig.myIp, dcConfig.port);
-
-        sendThread.start();
+        dcHandler=new DCHandler(new DCProcessor(new DCDatabaseImpl()));
         isStart = true;
 
     }
@@ -115,8 +114,7 @@ public class DC {
     public void shutDown() {
         isStart = false;
         registerAndMonitorService.close();
-        sendThread.close();
+        dcHandler.close();
         tcpServer.close();
-
     }
 }

@@ -11,13 +11,23 @@
 
     <artifactId>dc-logic</artifactId>
     <dependencies>
-
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>dc-db-cassandra</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -3,18 +3,14 @@ package lab.mars.dc.network.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lab.mars.dc.DCPacket;
-import lab.mars.dc.ResponsePacket;
 import lab.mars.dc.connectmanage.LRUManage;
-import lab.mars.dc.exception.DCException;
 import lab.mars.dc.loadbalance.LoadBalanceService;
-import lab.mars.dc.network.TcpClient;
+import lab.mars.dc.server.DCHandler;
 import lab.mars.server.DCProcessor;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Author:yaoalong.
@@ -26,46 +22,22 @@ public class ServerChannelHandler extends
     private static Logger LOG = LoggerFactory
             .getLogger(ServerChannelHandler.class);
     private final LinkedList<DCPacket> pendingQueue = new LinkedList<>();
-    private final ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
-    private final String self;
-    private final LoadBalanceService loadBalanceService;
 
     private final LRUManage lruManage;
 
-    private final DCProcessor dcProcessor;
+    private final DCHandler dcHandler;
 
     public ServerChannelHandler(String self, LRUManage lruManage, LoadBalanceService loadBalanceService, DCProcessor dcProcessor) {
-        this.self = self;
         this.lruManage = lruManage;
-        this.loadBalanceService = loadBalanceService;
-        this.dcProcessor = dcProcessor;
+        this.dcHandler = new DCHandler(dcProcessor, self, loadBalanceService);
+
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
         lruManage.refresh(ctx);
-        DCPacket dcPacket = (DCPacket) msg;
-        try {
-            if (preProcessPacket(dcPacket, ctx)) {
-                dcProcessor.receiveMessage(dcPacket, ctx.channel());
-            }
-        }
-        catch (DCException e){
-            DCException.Code code=e.getCode();
-            ResponsePacket responsePacket=new ResponsePacket();
-            responsePacket.setCode(code);
-            DCPacket result=new DCPacket();
-            result.setResponsePacket(responsePacket);
-            ctx.writeAndFlush(result);
-        }
-        catch (Exception e) {
-            DCException.Code code= DCException.Code.SYSTEM_ERROR;
-            ResponsePacket responsePacket=new ResponsePacket();
-            responsePacket.setCode(code);
-            DCPacket result=new DCPacket();
-            result.setResponsePacket(responsePacket);
-            ctx.writeAndFlush(result);
-        }
+        dcHandler.receiveMessage((DCPacket) msg, ctx.channel());
+
     }
 
     @Override
@@ -87,63 +59,5 @@ public class ServerChannelHandler extends
         ctx.close();
     }
 
-    /**
-     * 数据包的处理
-     *
-     * @param dcPacket
-     * @param ctx
-     * @return
-     */
-    public boolean preProcessPacket(DCPacket dcPacket,
-                                    ChannelHandlerContext ctx) throws Exception {
-        if(dcPacket==null||dcPacket.getRequestPacket()==null|| StringUtils.isBlank(dcPacket.getRequestPacket().getId())){
-            throw new DCException(DCException.Code.PARAM_ERROR);
-        }
-        String key = dcPacket.getRequestPacket().getId();
-        String server = loadBalanceService.getServer(key);
-        if (server.equals(self)) {
-            return true;
-        }
-        for(int i=0;i<5;i++){
-            if (ipAndTcpClient.containsKey(server)) {
-                try {
-                    ipAndTcpClient.get(server).write(dcPacket);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    ipAndTcpClient.remove(server);
-                    continue;
-                }
-                ctx.writeAndFlush(dcPacket);
-                return false;
-            } else {
-                try {
-                    TcpClient tcpClient = new TcpClient(pendingQueue);
-                    String[] splitStrings = spilitString(server);
-                    tcpClient.connectionOne(splitStrings[0],Integer.parseInt(splitStrings[1]));
-                    tcpClient.write(dcPacket);
-                    ctx.writeAndFlush(dcPacket);
-                    ipAndTcpClient.put(server, tcpClient);
-                    return false;
-                } catch (Exception e) {
-                    LOG.error("process packet error:", e);
-                }
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            server = loadBalanceService.getServer(key);
-            System.out.println("server"+server);
-        }
-       throw new Exception("系统错误");
-    }
 
-    /*
-     * 将server拆分为ip以及port
-     */
-    private String[] spilitString(String ip) {
-        String[] splitMessage = ip.split(":");
-        return splitMessage;
-    }
 }

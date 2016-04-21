@@ -4,6 +4,7 @@ import lab.mars.dc.DCPacket;
 import lab.mars.dc.ResponsePacket;
 import lab.mars.dc.exception.DCException;
 import lab.mars.dc.network.initializer.PacketClientChannelInitializer;
+import lab.mars.dc.server.DCHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,8 @@ public class TcpClient extends TcpClientNetwork {
     private static final Logger LOG = LoggerFactory.getLogger(TcpClient.class);
 
     private final LinkedList<DCPacket> pendingQueue;
-    private SendThread sendThread;
+
+    private DCHandler dcHandler;
 
     public TcpClient() {
         this(new LinkedList<>());
@@ -62,12 +64,11 @@ public class TcpClient extends TcpClientNetwork {
             throw new Exception("channel is closed");
         }
         channel.writeAndFlush(msg);
-        System.out.println("发送了");
         synchronized (msg) {
             if (!((DCPacket) msg).isFinished()) {
-                try{
+                try {
                     msg.wait(3000);
-                }catch (InterruptedException e){
+                } catch (InterruptedException e) {
 
                 }
             }
@@ -76,13 +77,13 @@ public class TcpClient extends TcpClientNetwork {
             synchronized (pendingQueue) {
                 pendingQueue.remove();
             }
-            ResponsePacket responsePacket=new ResponsePacket();
+            ResponsePacket responsePacket = new ResponsePacket();
             responsePacket.setCode(DCException.Code.SYSTEM_ERROR);
-            ((DCPacket)msg).setResponsePacket(responsePacket);
+            ((DCPacket) msg).setResponsePacket(responsePacket);
         }
         System.out.println("OK");
-        if (sendThread != null) {
-            sendThread.readResponse((DCPacket) msg);
+        if (dcHandler != null) {
+            dcHandler.readResponse((DCPacket) msg);
         }
 
     }
@@ -92,7 +93,7 @@ public class TcpClient extends TcpClientNetwork {
     }
 
 
-    public void setSendThread(SendThread sendThread) {
-        this.sendThread = sendThread;
+    public void setDcHandler(DCHandler dcHandler) {
+        this.dcHandler = dcHandler;
     }
 }
