@@ -38,7 +38,7 @@ public class DCTestBase {
         requestPacket.setOperateType(OperateType.CREATE);
         LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
         logResourceService.setId(1111);
-        logResourceService.setRelatedResource(new String[]{"/cse/alle"});
+        logResourceService.setRelatedResources(new String[]{"/cse/alle"});
         byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
         requestPacket.setResourceService(bytes);
         requestPacket.setAsyncCallback(asyncCallback);

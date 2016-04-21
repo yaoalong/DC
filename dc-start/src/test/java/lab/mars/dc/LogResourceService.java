@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 这个服务只是在每次服务的时候打印一条消息
  */
-public class LogResourceService extends ResourceService {
+public class LogResourceService implements ResourceService {
     private static Logger LOG = LoggerFactory.getLogger(LogResourceService.class);
 
     public void init() {
@@ -29,6 +29,16 @@ public class LogResourceService extends ResourceService {
     }
 
     public void shutdown() {
+
+    }
+
+    @Override
+    public String[] getRelatedResources() {
+        return new String[0];
+    }
+
+    @Override
+    public void setRelatedResources(String[] relatedResources) {
 
     }
 }

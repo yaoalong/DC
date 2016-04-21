@@ -47,7 +47,7 @@ public class ResourceOperateTest extends DCTestBase {
             public void processResult(DCException.Code code, String id, ResourceService resoureService) {
                 if (OK == code) {
                     System.out.println("success");
-                    for (String string : resoureService.getRelatedResource()) {
+                    for (String string : resoureService.getRelatedResources()) {
                         System.out.println("related resource:" + string);
                     }
                 } else {

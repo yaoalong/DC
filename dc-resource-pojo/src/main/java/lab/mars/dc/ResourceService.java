@@ -7,24 +7,17 @@ import java.io.Serializable;
  * Date:2016/3/25.
  * Email:yaoalong@foxmail.com
  */
-public abstract class ResourceService implements Serializable {
+public interface ResourceService extends Serializable {
 
-    public String[] relatedResource;
+    void init();
 
-    public abstract void init();
+    void start();
 
+    ResultDO service(DataContent dataContent);
 
-    public abstract void start();
+    void shutdown();
 
-    public abstract ResultDO service(DataContent dataContent);
+    String[] getRelatedResources();
 
-    public abstract void shutdown();
-
-    public String[] getRelatedResource() {
-        return relatedResource;
-    }
-
-    public void setRelatedResource(String[] relatedResource) {
-        this.relatedResource = relatedResource;
-    }
+    void setRelatedResources(String[] relatedResources);
 }

@@ -10,7 +10,7 @@ import lab.mars.dc.ResultDO;
  * Date:2016/4/2.
  * Email:yaoalong@foxmail.com
  */
-public class LogResourceServiceImpl extends ResourceService {
+public class LogResourceServiceImpl implements ResourceService {
 
     public int id;
 
@@ -34,6 +34,16 @@ public class LogResourceServiceImpl extends ResourceService {
 
     @Override
     public void shutdown() {
+
+    }
+
+    @Override
+    public String[] getRelatedResources() {
+        return new String[0];
+    }
+
+    @Override
+    public void setRelatedResources(String[] relatedResources) {
 
     }
 
