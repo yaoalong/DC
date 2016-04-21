@@ -46,7 +46,7 @@ public class ClientChannelHandler extends
                 throw new IOException("Nothing in the queue, but got "
                 );
             }
-            packet = tcpClient.getPendingQueue().remove();
+            packet = tcpClient.getPendingQueue().remove(dcPacket.getCid());
             synchronized (packet){
                 packet.setFinished(true);
                 packet.setResponsePacket(dcPacket.getResponsePacket());

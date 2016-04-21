@@ -13,6 +13,7 @@ public class DCPacket implements Serializable{
     private RequestPacket requestPacket;
     private ResponsePacket responsePacket;
     private boolean isFinished;
+    private long cid;
     public RequestPacket getRequestPacket() {
         return requestPacket;
     }
@@ -35,5 +36,13 @@ public class DCPacket implements Serializable{
 
     public void setFinished(boolean finished) {
         isFinished = finished;
+    }
+
+    public long getCid() {
+        return cid;
+    }
+
+    public void setCid(long cid) {
+        this.cid = cid;
     }
 }

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Author:yaoalong.
@@ -18,17 +19,17 @@ import java.util.LinkedList;
 public class TcpClient extends TcpClientNetwork {
 
     private static final Logger LOG = LoggerFactory.getLogger(TcpClient.class);
+    private  ConcurrentHashMap<Long,DCPacket> pendingQueue=new ConcurrentHashMap<>();
 
-    private final LinkedList<DCPacket> pendingQueue;
 
     private DCHandler dcHandler;
 
     public TcpClient() {
-        this(new LinkedList<>());
+        this(new ConcurrentHashMap<>());
 
     }
 
-    public TcpClient(LinkedList<DCPacket> m2mPacket) {
+    public TcpClient(ConcurrentHashMap<Long,DCPacket> m2mPacket) {
         this.pendingQueue = m2mPacket;
         setSocketChannelChannelInitializer(new PacketClientChannelInitializer(
                 this));
@@ -57,7 +58,7 @@ public class TcpClient extends TcpClientNetwork {
         }
         if (pendingQueue != null) {
             synchronized (pendingQueue) {
-                pendingQueue.add((DCPacket) msg);
+                pendingQueue.put(((DCPacket)msg).getCid(),(DCPacket) msg);
             }
         }
         if (!channel.isActive()) {
@@ -74,21 +75,18 @@ public class TcpClient extends TcpClientNetwork {
             }
         }
         if (!((DCPacket) msg).isFinished()) {
-            synchronized (pendingQueue) {
-                pendingQueue.remove();
-            }
+                pendingQueue.remove(((DCPacket)(msg)).getCid());
             ResponsePacket responsePacket = new ResponsePacket();
             responsePacket.setCode(DCException.Code.SYSTEM_ERROR);
             ((DCPacket) msg).setResponsePacket(responsePacket);
         }
-        System.out.println("OK");
         if (dcHandler != null) {
             dcHandler.readResponse((DCPacket) msg);
         }
 
     }
 
-    public LinkedList<DCPacket> getPendingQueue() {
+    public ConcurrentHashMap<Long,DCPacket> getPendingQueue() {
         return pendingQueue;
     }
 

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Author:yaoalong.
@@ -26,10 +27,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DCHandler {
     private static final Logger LOG = LoggerFactory.getLogger(DCHandler.class);
     private final ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long,DCPacket> pendingQueue=new ConcurrentHashMap<>();
     private  String self;
     private  LoadBalanceService loadBalanceService;
-    private final LinkedList<DCPacket> pendingQueue = new LinkedList<>();
     private DCProcessor dcProcessor;
+    private AtomicLong cid=new AtomicLong();
     public DCHandler(DCProcessor dcProcessor){
         this.dcProcessor=dcProcessor;
     }
@@ -121,6 +123,8 @@ public class DCHandler {
         if (server.equals(self)) {
             return true;
         }
+        long cid=getNextCid();
+        dcPacket.setCid(cid);
         for (int i = 0; i < 5; i++) {
             if (ipAndTcpClient.containsKey(server)) {
                 try {
@@ -166,8 +170,9 @@ public class DCHandler {
     }
 
     public void readResponse(DCPacket dcPacket) {
+
         synchronized (pendingQueue) {
-            DCPacket dcPacket1 = pendingQueue.remove();
+            DCPacket dcPacket1 = pendingQueue.get(dcPacket.getCid());
             ResponsePacket responsePacket = dcPacket.getResponsePacket();
             AsyncCallback asyncCallback = dcPacket1.getRequestPacket().getAsyncCallback();
             if (asyncCallback != null) {
@@ -201,5 +206,8 @@ public class DCHandler {
             }
 
         }
+    }
+    public long getNextCid(){
+        return cid.getAndIncrement();
     }
 }
