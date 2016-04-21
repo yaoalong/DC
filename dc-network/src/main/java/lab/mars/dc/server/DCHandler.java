@@ -75,7 +75,6 @@ public class DCHandler {
         }
 
     }
-    //TODO 进行异步接口调用
 
 
     public void receiveMessage(DCPacket dcPacket, Channel channel) {
@@ -136,6 +135,7 @@ public class DCHandler {
             } else {
                 try {
                     TcpClient tcpClient = new TcpClient(pendingQueue);
+                    tcpClient.setDcHandler(this);
                     String[] splitStrings = spilitString(server);
                     tcpClient.connectionOne(splitStrings[0], Integer.parseInt(splitStrings[1]));
                     tcpClient.write(dcPacket);

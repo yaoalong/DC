@@ -21,7 +21,6 @@ public class ServerChannelHandler extends
         SimpleChannelInboundHandler<Object> {
     private static Logger LOG = LoggerFactory
             .getLogger(ServerChannelHandler.class);
-    private final LinkedList<DCPacket> pendingQueue = new LinkedList<>();
 
     private final LRUManage lruManage;
 

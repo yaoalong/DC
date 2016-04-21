@@ -4,7 +4,6 @@ import lab.mars.dc.collaboration.RegisterAndMonitorService;
 import lab.mars.dc.collaboration.ZKRegisterAndMonitorService;
 import lab.mars.dc.exception.DCException;
 import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
-import lab.mars.dc.network.SendThread;
 import lab.mars.dc.network.TcpServer;
 import lab.mars.dc.persistence.DCDatabaseImpl;
 import lab.mars.dc.server.DCHandler;
@@ -106,7 +105,7 @@ public class DC {
         }
         registerAndMonitorService = new ZKRegisterAndMonitorService();
         registerAndMonitorService.register(dcConfig.zooKeeperServer, ipAndPort, loadBalanceConsistentHash);
-        dcHandler=new DCHandler(new DCProcessor(new DCDatabaseImpl()));
+        dcHandler = new DCHandler(new DCProcessor(new DCDatabaseImpl()));
         isStart = true;
 
     }
