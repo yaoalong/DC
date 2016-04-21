@@ -8,7 +8,6 @@ import lab.mars.dc.server.DCHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TcpClient extends TcpClientNetwork {
 
     private static final Logger LOG = LoggerFactory.getLogger(TcpClient.class);
-    private  ConcurrentHashMap<Long,DCPacket> pendingQueue=new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, DCPacket> pendingQueue = new ConcurrentHashMap<>();
 
 
     private DCHandler dcHandler;
@@ -29,7 +28,7 @@ public class TcpClient extends TcpClientNetwork {
 
     }
 
-    public TcpClient(ConcurrentHashMap<Long,DCPacket> m2mPacket) {
+    public TcpClient(ConcurrentHashMap<Long, DCPacket> m2mPacket) {
         this.pendingQueue = m2mPacket;
         setSocketChannelChannelInitializer(new PacketClientChannelInitializer(
                 this));
@@ -58,7 +57,7 @@ public class TcpClient extends TcpClientNetwork {
         }
         if (pendingQueue != null) {
             synchronized (pendingQueue) {
-                pendingQueue.put(((DCPacket)msg).getCid(),(DCPacket) msg);
+                pendingQueue.put(((DCPacket) msg).getCid(), (DCPacket) msg);
             }
         }
         if (!channel.isActive()) {
@@ -75,7 +74,7 @@ public class TcpClient extends TcpClientNetwork {
             }
         }
         if (!((DCPacket) msg).isFinished()) {
-                pendingQueue.remove(((DCPacket)(msg)).getCid());
+            pendingQueue.remove(((DCPacket) (msg)).getCid());
             ResponsePacket responsePacket = new ResponsePacket();
             responsePacket.setCode(DCException.Code.SYSTEM_ERROR);
             ((DCPacket) msg).setResponsePacket(responsePacket);
@@ -86,7 +85,7 @@ public class TcpClient extends TcpClientNetwork {
 
     }
 
-    public ConcurrentHashMap<Long,DCPacket> getPendingQueue() {
+    public ConcurrentHashMap<Long, DCPacket> getPendingQueue() {
         return pendingQueue;
     }
 
