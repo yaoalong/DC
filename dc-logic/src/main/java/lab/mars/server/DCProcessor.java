@@ -6,8 +6,16 @@ import lab.mars.dc.exception.DCException;
 import lab.mars.dc.exception.DCException.Code;
 import lab.mars.dc.persistence.DCDatabaseService;
 import lab.mars.dc.reflection.ResourceReflection;
+import lab.mars.dc.server.RangeDO;
 import lab.mars.dc.server.ResourceServiceDO;
 
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static lab.mars.dc.exception.DCException.Code.OK;
@@ -20,11 +28,33 @@ import static lab.mars.dc.exception.DCException.Code.OK;
  */
 public class DCProcessor {
 
+    private static ThreadLocal<MessageDigest> MD5 = new ThreadLocal<MessageDigest>() {
+        @Override
+        protected final MessageDigest initialValue() {
+            try {
+                return MessageDigest.getInstance("MD5");
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalStateException("++++ no md5 algorythm found");
+            }
+        }
+    };
     private ConcurrentHashMap<String, ResourceService> resourceServices = new ConcurrentHashMap<>();
     private DCDatabaseService dcDatabaseService;
+    private TreeMap<Long, RangeDO> endRangeDOMap = new TreeMap<Long, RangeDO>();
 
     public DCProcessor(DCDatabaseService dcDatabaseService) {
         this.dcDatabaseService = dcDatabaseService;
+    }
+
+    public static long md5HashingAlg(String key) {
+        MessageDigest md5 = MD5.get();
+        md5.reset();
+        md5.update(key.getBytes(Charset.forName("utf-8")));
+        byte[] bKey = md5.digest();
+        long res = ((long) (bKey[3] & 0xFF) << 24)
+                | ((long) (bKey[2] & 0xFF) << 16)
+                | ((long) (bKey[1] & 0xFF) << 8) | (long) (bKey[0] & 0xFF);
+        return res;
     }
 
     /**
@@ -124,14 +154,47 @@ public class DCProcessor {
         responsePacket.setCode(code);
         DCPacket result = new DCPacket();
         result.setResponsePacket(responsePacket);
-        if(channel!=null) {
+        if (channel != null) {
             channel.writeAndFlush(result);
         }
         return result;
     }
 
+    public void update(List<RangeDO> rangeDOs) {
+        endRangeDOMap.clear();
+        for (RangeDO rangeDO : rangeDOs) {
+            endRangeDOMap.put(rangeDO.getEnd(), rangeDO);
+        }
+        Iterator<String> iterator = resourceServices.keySet().iterator();
+        while (iterator.hasNext()) {
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                if (!judgeIsHandle(md5HashingAlg(key))) {
+                    ResourceService resourceService = resourceServices.get(key);
+                    resourceService.shutdown();
+                    iterator.remove();
+                }
+
+            }
+        }
+
+    }
+
+    private boolean judgeIsHandle(long zxid) {
+        SortedMap<Long, RangeDO> tmap = this.endRangeDOMap.tailMap(zxid);
+
+        Long position = (tmap.isEmpty()) ? this.endRangeDOMap.firstKey() : tmap
+                .firstKey();
+        RangeDO rangeDO = endRangeDOMap.get(position);
+        if (rangeDO != null && rangeDO.getStart() < zxid) {
+            return true;
+        }
+        return false;
+    }
+
     public void close() {
         dcDatabaseService.close();
     }
+
 
 }

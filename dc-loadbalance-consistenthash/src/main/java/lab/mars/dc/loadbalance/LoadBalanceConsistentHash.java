@@ -1,5 +1,6 @@
 package lab.mars.dc.loadbalance;
 
+import lab.mars.dc.server.RangeDO;
 import lab.mars.server.DCProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,9 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Author:yaoalong.
@@ -40,13 +39,16 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     private volatile boolean initialized = false;
     private TreeMap<Long, String> consistentBuckets = new TreeMap<>();
 
+    private DCProcessor dcProcessor;
+
+    private String myIp;
     /**
      * 计算一个key的hash值
      *
      * @param key
      * @return
      */
-    private static long md5HashingAlg(String key) {
+    public static long md5HashingAlg(String key) {
         MessageDigest md5 = MD5.get();
         md5.reset();
         md5.update(key.getBytes(Charset.forName("utf-8")));
@@ -90,6 +92,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
         this.servers = servers;
         synchronized (consistentBuckets) {
             populateConsistentBuckets();
+            dcProcessor.update(getRanges(myIp));
         }
 
     }
@@ -107,7 +110,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
 
     @Override
     public void setDCProcessor(DCProcessor dcProcessor) {
-
+        this.dcProcessor=dcProcessor;
     }
 
     private final long getBucket(String key) {
@@ -121,5 +124,33 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
         return (tmap.isEmpty()) ? this.consistentBuckets.firstKey() : tmap
                 .firstKey();
 
+    }
+    public List<RangeDO> getRanges(String server) {
+        List<RangeDO> result = new ArrayList<>();
+        if (consistentBuckets.isEmpty()) {
+            return result;
+        }
+        long pre = 0;
+        for (Map.Entry<Long, String> entry : consistentBuckets.entrySet()) {
+
+            if (server.equals(entry.getValue())) {
+
+                RangeDO rangeDO = new RangeDO(pre, entry.getKey());
+                result.add(rangeDO);
+            }
+
+            pre = entry.getKey();
+        }
+        if (server.equals(consistentBuckets.firstEntry().getValue())) {
+            Map.Entry<Long, String> end = consistentBuckets.lastEntry();
+            RangeDO rangeDO = new RangeDO(end.getKey(), Long.MAX_VALUE);
+            result.add(rangeDO);
+        }
+        return result;
+    }
+
+    @Override
+    public void setMyIp(String myIp) {
+        this.myIp=myIp;
     }
 }

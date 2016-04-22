@@ -1,5 +1,6 @@
 package lab.mars.dc.loadbalance;
 
+import lab.mars.dc.server.RangeDO;
 import lab.mars.server.DCProcessor;
 
 import java.util.List;
@@ -25,6 +26,10 @@ public interface LoadBalanceService {
     String getServer(String key);
 
     void setDCProcessor(DCProcessor dcProcessor);
+
+    List<RangeDO> getRanges(String server);
+
+    void setMyIp(String myIp);
 
 
 }
