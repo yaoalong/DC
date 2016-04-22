@@ -56,9 +56,8 @@ public class TcpClient extends TcpClientNetwork {
             throw new Exception("Not successfully connect to the server");
         }
         if (pendingQueue != null) {
-            synchronized (pendingQueue) {
-                pendingQueue.put(((DCPacket) msg).getCid(), (DCPacket) msg);
-            }
+            pendingQueue.put(((DCPacket) msg).getCid(), (DCPacket) msg);
+
         }
         if (!channel.isActive()) {
             throw new Exception("channel is closed");

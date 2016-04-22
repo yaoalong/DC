@@ -1,5 +1,6 @@
 package lab.mars.dc.loadbalance;
 
+import lab.mars.server.DCProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,8 @@ import java.util.TreeMap;
  * Date:2016/3/30.
  * Email:yaoalong@foxmail.com
  */
+
+
 public class LoadBalanceConsistentHash implements LoadBalanceService {
     private static Logger LOG = LoggerFactory.getLogger(LoadBalanceConsistentHash.class);
     private static ThreadLocal<MessageDigest> MD5 = new ThreadLocal<MessageDigest>() {
@@ -29,6 +32,9 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
             }
         }
     };
+    /**
+     * 默认虚拟节点是一个
+     */
     private int numOfVirtualNode = 1;
     private List<String> servers;
     private volatile boolean initialized = false;
@@ -96,6 +102,11 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
         synchronized (consistentBuckets) {
             return consistentBuckets.get(getBucket(key));
         }
+
+    }
+
+    @Override
+    public void setDCProcessor(DCProcessor dcProcessor) {
 
     }
 

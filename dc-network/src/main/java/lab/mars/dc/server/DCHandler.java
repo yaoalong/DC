@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -27,14 +26,16 @@ import java.util.concurrent.atomic.AtomicLong;
 public class DCHandler {
     private static final Logger LOG = LoggerFactory.getLogger(DCHandler.class);
     private final ConcurrentHashMap<String, TcpClient> ipAndTcpClient = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Long,DCPacket> pendingQueue=new ConcurrentHashMap<>();
-    private  String self;
-    private  LoadBalanceService loadBalanceService;
+    private final ConcurrentHashMap<Long, DCPacket> pendingQueue = new ConcurrentHashMap<>();
+    private String self;
+    private LoadBalanceService loadBalanceService;
     private DCProcessor dcProcessor;
-    private AtomicLong cid=new AtomicLong();
-    public DCHandler(DCProcessor dcProcessor){
-        this.dcProcessor=dcProcessor;
+    private AtomicLong cid = new AtomicLong();
+
+    public DCHandler(DCProcessor dcProcessor) {
+        this.dcProcessor = dcProcessor;
     }
+
     public DCHandler(DCProcessor dcProcessor, String self, LoadBalanceService loadBalanceService) {
         this.dcProcessor = dcProcessor;
         this.self = self;
@@ -123,7 +124,7 @@ public class DCHandler {
         if (server.equals(self)) {
             return true;
         }
-        long cid=getNextCid();
+        long cid = getNextCid();
         dcPacket.setCid(cid);
         for (int i = 0; i < 5; i++) {
             if (ipAndTcpClient.containsKey(server)) {
@@ -171,43 +172,42 @@ public class DCHandler {
 
     public void readResponse(DCPacket dcPacket) {
 
-        synchronized (pendingQueue) {
-            DCPacket dcPacket1 = pendingQueue.get(dcPacket.getCid());
-            ResponsePacket responsePacket = dcPacket.getResponsePacket();
-            AsyncCallback asyncCallback = dcPacket1.getRequestPacket().getAsyncCallback();
-            if (asyncCallback != null) {
-                if (dcPacket1.getRequestPacket().getOperateType() == OperateType.CREATE || dcPacket1.getRequestPacket().getOperateType() == OperateType.DELETE || dcPacket1.getRequestPacket().getOperateType() == OperateType.UPDATE) {
-                    AsyncCallback.VoidCallback voidCallback = (AsyncCallback.VoidCallback) asyncCallback;
-                    voidCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId());
-                } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.RETRIEVE) {
-                    AsyncCallback.DataCallback dataCallback = (AsyncCallback.DataCallback) asyncCallback;
-                    if (dcPacket.getResponsePacket().getCode() == DCException.Code.OK) {
+        DCPacket dcPacket1 = pendingQueue.get(dcPacket.getCid());
+        ResponsePacket responsePacket = dcPacket.getResponsePacket();
+        AsyncCallback asyncCallback = dcPacket1.getRequestPacket().getAsyncCallback();
+        if (asyncCallback != null) {
+            if (dcPacket1.getRequestPacket().getOperateType() == OperateType.CREATE || dcPacket1.getRequestPacket().getOperateType() == OperateType.DELETE || dcPacket1.getRequestPacket().getOperateType() == OperateType.UPDATE) {
+                AsyncCallback.VoidCallback voidCallback = (AsyncCallback.VoidCallback) asyncCallback;
+                voidCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId());
+            } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.RETRIEVE) {
+                AsyncCallback.DataCallback dataCallback = (AsyncCallback.DataCallback) asyncCallback;
+                if (dcPacket.getResponsePacket().getCode() == DCException.Code.OK) {
 
-                        ResourceService resourceService = null;
-                        if (responsePacket.getResourceService() != null) {
-                            resourceService = (ResourceService) ResourceReflection.deserializeKryo(responsePacket.getResourceService());
-                        }
+                    ResourceService resourceService = null;
+                    if (responsePacket.getResourceService() != null) {
+                        resourceService = (ResourceService) ResourceReflection.deserializeKryo(responsePacket.getResourceService());
+                    }
 
-                        dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
-                    } else {
-                        dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), null);
-                    }
-                } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.SERVICE) {
-                    AsyncCallback.ServiceCallback serviceCallback = (AsyncCallback.ServiceCallback) dcPacket1.getRequestPacket().getAsyncCallback();
-                    if (dcPacket1.getResponsePacket() == null) {
-                        ResponsePacket responsePacket1 = new ResponsePacket();
-                        responsePacket1.setCode(DCException.Code.SYSTEM_ERROR);
-                        serviceCallback.processResult(responsePacket1.getCode(), null, null);
-                    } else {
-                        ResultDO resultDO = (ResultDO) ResourceReflection.deserializeKryo(responsePacket.getResult());
-                        serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resultDO);
-                    }
+                    dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resourceService);
+                } else {
+                    dataCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), null);
+                }
+            } else if (dcPacket1.getRequestPacket().getOperateType() == OperateType.SERVICE) {
+                AsyncCallback.ServiceCallback serviceCallback = (AsyncCallback.ServiceCallback) dcPacket1.getRequestPacket().getAsyncCallback();
+                if (dcPacket1.getResponsePacket() == null) {
+                    ResponsePacket responsePacket1 = new ResponsePacket();
+                    responsePacket1.setCode(DCException.Code.SYSTEM_ERROR);
+                    serviceCallback.processResult(responsePacket1.getCode(), null, null);
+                } else {
+                    ResultDO resultDO = (ResultDO) ResourceReflection.deserializeKryo(responsePacket.getResult());
+                    serviceCallback.processResult(responsePacket.getCode(), dcPacket1.getRequestPacket().getId(), resultDO);
                 }
             }
-
         }
+
     }
-    public long getNextCid(){
+
+    public long getNextCid() {
         return cid.getAndIncrement();
     }
 }

@@ -28,8 +28,6 @@ public class DC {
 
     private static final Logger LOG = LoggerFactory.getLogger(DC.class);
     private TcpServer tcpServer;
-
-
     private DCHandler dcHandler;
 
     private volatile boolean isStart = false;
@@ -68,7 +66,7 @@ public class DC {
      *
      * @param requestPacket
      */
-    //TODO
+
     public void send(RequestPacket requestPacket) {
         while (!isStart) {
             try {

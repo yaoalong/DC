@@ -1,5 +1,7 @@
 package lab.mars.dc.loadbalance;
 
+import lab.mars.server.DCProcessor;
+
 import java.util.List;
 
 /**
@@ -21,6 +23,8 @@ public interface LoadBalanceService {
      * @return
      */
     String getServer(String key);
+
+    void setDCProcessor(DCProcessor dcProcessor);
 
 
 }
