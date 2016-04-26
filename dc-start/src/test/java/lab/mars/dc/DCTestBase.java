@@ -1,7 +1,6 @@
 package lab.mars.dc;
 
 import lab.mars.dc.exception.DCException;
-import lab.mars.dc.impl.LogResourceServiceImpl;
 import lab.mars.dc.reflection.ResourceReflection;
 import org.junit.After;
 import org.junit.Before;
@@ -25,12 +24,12 @@ public class DCTestBase {
     AsyncCallback asyncCallback = new AsyncCallback.VoidCallback() {
         @Override
         public void processResult(DCException.Code code, String id) {
-            long i=atomicLong.getAndIncrement();
-            if(i==100000){
-                System.out.println("完成了"+(System.nanoTime()-current));
+            long i = atomicLong.getAndIncrement();
+            if (i == 100000) {
+                System.out.println("完成了" + (System.nanoTime() - current));
             }
             if (code == DCException.Code.OK) {
-             //   LOG.info("success");
+                //   LOG.info("success");
             } else {
                 //LOG.info("error" + code);
             }

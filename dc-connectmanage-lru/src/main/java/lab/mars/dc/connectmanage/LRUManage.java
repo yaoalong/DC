@@ -11,6 +11,10 @@ import java.util.Map;
  * Date:2016/3/31.
  * Email:yaoalong@foxmail.com
  */
+
+/**
+ * 连接管理
+ */
 public class LRUManage implements ConnectManager {
     private int size = 16;
     

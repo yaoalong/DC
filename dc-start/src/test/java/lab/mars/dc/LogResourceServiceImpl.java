@@ -1,9 +1,5 @@
-package lab.mars.dc.impl;
+package lab.mars.dc;
 
-import lab.mars.dc.DataContent;
-import lab.mars.dc.NameResultDO;
-import lab.mars.dc.ResourceService;
-import lab.mars.dc.ResultDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
