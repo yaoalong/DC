@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static lab.mars.dc.ResourceOperateTest.atomicLong;
+import static lab.mars.dc.ResourceOperateTest.current;
+
 /**
  * Author:yaoalong.
  * Date:2016/3/25.
@@ -22,10 +25,14 @@ public class DCTestBase {
     AsyncCallback asyncCallback = new AsyncCallback.VoidCallback() {
         @Override
         public void processResult(DCException.Code code, String id) {
+            long i=atomicLong.getAndIncrement();
+            if(i==100000){
+                System.out.println("完成了"+(System.nanoTime()-current));
+            }
             if (code == DCException.Code.OK) {
-                LOG.info("success");
+             //   LOG.info("success");
             } else {
-                LOG.info("error" + code);
+                //LOG.info("error" + code);
             }
         }
     };

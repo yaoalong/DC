@@ -16,37 +16,34 @@ import java.util.concurrent.CountDownLatch;
  * Date:2016/3/30.
  * Email:yaoalong@foxmail.com
  */
-public class ZKRegisterAndMonitorService implements RegisterAndMonitorService,Watcher {
-    private ZooKeeper zooKeeper;
+
+/**
+ * 基于ZooKeeper实现的注册服务
+ */
+public class ZKRegisterAndMonitorService implements RegisterAndMonitorService, Watcher {
     private static final Logger LOG = LoggerFactory
             .getLogger(ZKRegisterAndMonitorService.class);
     private static CountDownLatch countDownLatch = new CountDownLatch(1);
+    private ZooKeeper zooKeeper;
+
     @Override
     public void register(String zooKeeperServer, String value, LoadBalanceService loadBalanceService) throws IOException {
         zooKeeper = new ZooKeeper(zooKeeperServer, 5000, new ZKRegisterAndMonitorService());
         try {
             countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        RegisterIntoZooKeeper registerIntoZooKeeper = new RegisterIntoZooKeeper();
-        try {
-            registerIntoZooKeeper.register(zooKeeper,value);
-        } catch (IOException e) {
-            e.printStackTrace();
+            RegisterIntoZooKeeper registerIntoZooKeeper = new RegisterIntoZooKeeper();
+            registerIntoZooKeeper.register(zooKeeper, value);
+            registerIntoZooKeeper.start();
+            if (registerIntoZooKeeper != null) {
+                registerIntoZooKeeper.join();
+
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (KeeperException e) {
             e.printStackTrace();
         }
-        registerIntoZooKeeper.start();
-        if (registerIntoZooKeeper != null) {
-            try {
-                registerIntoZooKeeper.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+
         ZooKeeper_Monitor zooKeeper_monitor = new ZooKeeper_Monitor(zooKeeper);
         zooKeeper_monitor.setLoadBalanceService(loadBalanceService);
         zooKeeper_monitor.start();
@@ -59,8 +56,9 @@ public class ZKRegisterAndMonitorService implements RegisterAndMonitorService,Wa
             countDownLatch.countDown();
         }
     }
+
     @Override
-    public void close(){
+    public void close() {
         try {
             zooKeeper.close();
         } catch (InterruptedException e) {

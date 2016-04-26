@@ -12,11 +12,17 @@ import org.junit.Test;
 public class DCDatabaseCreateTest extends DCTestBase {
     @Test
     public void testCreate() throws DCException {
-        for (int i = 10; i < 20; i++) {
+        long currentTime=System.currentTimeMillis();
+        for (int i = 1; i < 100000; i++) {
             ResourceServiceDO resourceServiceDO = new ResourceServiceDO();
             resourceServiceDO.setData(("allen" + i).getBytes());
             resourceServiceDO.setId("" + i);
             dcDatabase.create(resourceServiceDO);
         }
+        System.out.println(System.currentTimeMillis()-currentTime);
+    }
+    @Test
+    public void testConcurrentTest(){
+
     }
 }

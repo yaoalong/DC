@@ -9,6 +9,10 @@ import java.io.IOException;
  * Date:2016/3/30.
  * Email:yaoalong@foxmail.com
  */
+
+/**
+ * 协同服务接口
+ */
 public interface RegisterAndMonitorService {
 
     void register(String zooKeeperServer, String value, LoadBalanceService loadBalanceService) throws IOException;

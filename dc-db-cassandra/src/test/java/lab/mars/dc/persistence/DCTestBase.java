@@ -19,12 +19,12 @@ public class DCTestBase {
     public void before() throws DCException {
 
         dcDatabase = new DCDatabaseImpl(true, "tests", "dc", "192.168.10.124");
-        for (int i = 0; i < 10; i++) {
-            ResourceServiceDO resourceServiceDO = new ResourceServiceDO();
-            resourceServiceDO.setData(("allen" + i).getBytes());
-            resourceServiceDO.setId("" + i);
-            dcDatabase.create(resourceServiceDO);
-        }
+//        for (int i = 0; i < 10; i++) {
+//            ResourceServiceDO resourceServiceDO = new ResourceServiceDO();
+//            resourceServiceDO.setData(("allen" + i).getBytes());
+//            resourceServiceDO.setId("" + i);
+//            dcDatabase.create(resourceServiceDO);
+//        }
 
     }
 

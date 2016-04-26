@@ -24,7 +24,7 @@ public class LogResourceService implements ResourceService {
     }
 
     public ResultDO service(DataContent dataContent) {
-        LOG.info("service:");
+       // LOG.info("service:");
         return null;
     }
 

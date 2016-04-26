@@ -4,6 +4,8 @@ import lab.mars.dc.DataContent;
 import lab.mars.dc.NameResultDO;
 import lab.mars.dc.ResourceService;
 import lab.mars.dc.ResultDO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author:yaoalong.
@@ -11,6 +13,7 @@ import lab.mars.dc.ResultDO;
  * Email:yaoalong@foxmail.com
  */
 public class LogResourceServiceImpl implements ResourceService {
+    private static final Logger LOG= LoggerFactory.getLogger(LogResourceServiceImpl.class);
 
     public int id;
     private String[] relatedServers;
@@ -27,9 +30,8 @@ public class LogResourceServiceImpl implements ResourceService {
 
     @Override
     public ResultDO service(DataContent dataContent) {
-        System.out.println("my Id:" + id);
         NameResultDO nameResultDO = new NameResultDO();
-        nameResultDO.setName("id+" + "long");
+        nameResultDO.setName("id");
         return nameResultDO;
     }
 

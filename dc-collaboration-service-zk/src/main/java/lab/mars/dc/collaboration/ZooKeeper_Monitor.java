@@ -40,7 +40,7 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
     @Override
     public void process(WatchedEvent event) {
      if (EventType.NodeChildrenChanged == event.getType()
-                && event.getPath().startsWith("/server")) {
+                && event.getPath().startsWith(ROOT_NODE)) {
             try {
                 if (zooKeeper == null) {
                     return;
@@ -60,8 +60,8 @@ public class ZooKeeper_Monitor extends Thread implements Watcher {
             LOG.error("zookeeper is empty");
             return;
         }
-        List<String> serverStrings = zooKeeper.getChildren(ROOT_NODE, this);
-        loadBalanceService.setServers(serverStrings);
+        List<String> servers = zooKeeper.getChildren(ROOT_NODE, this);
+        loadBalanceService.setServers(servers);
     }
 
 

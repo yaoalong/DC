@@ -5,6 +5,9 @@ import lab.mars.dc.impl.LogResourceServiceImpl;
 import lab.mars.dc.reflection.ResourceReflection;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
+
 import static lab.mars.dc.exception.DCException.Code.*;
 
 /**
@@ -16,7 +19,30 @@ import static lab.mars.dc.exception.DCException.Code.*;
 
 public class ResourceOperateTest extends DCTestBase {
 
+    public  static AtomicLong atomicLong=new AtomicLong(0);
+    public static volatile  long current;
+    @Test
+    public void createResource(){
+        current=System.nanoTime();
+        for(int i=0;i<100000;i++){
+            RequestPacket requestPacket = new RequestPacket();
+            requestPacket.setId("/root"+i);
+            requestPacket.setOperateType(OperateType.CREATE);
+            LogResourceServiceImpl logResourceService = new LogResourceServiceImpl();
+            logResourceService.setId(1111);
+            logResourceService.setRelatedResources(new String[]{"/cse/alle"});
+            byte[] bytes = ResourceReflection.serializeKryo(logResourceService);
+            requestPacket.setResourceService(bytes);
+            requestPacket.setAsyncCallback(asyncCallback);
+            dc.send(requestPacket);
 
+        }
+        try {
+            int i=System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 更新服务资源测试
      */
@@ -83,5 +109,37 @@ public class ResourceOperateTest extends DCTestBase {
             }
         });
         dc.send(requestPacket);
+    }
+    /**
+     * 服务资源计算
+     */
+    @Test
+    public void testConcurrentCalcuateResource() {
+        current=System.nanoTime();
+        for(int i=0;i<1000000;i++){
+            RequestPacket requestPacket = new RequestPacket();
+            requestPacket.setId("/root");
+            requestPacket.setOperateType(OperateType.SERVICE);
+            requestPacket.setAsyncCallback(new AsyncCallback.ServiceCallback() {
+                @Override
+                public void processResult(DCException.Code code, String id, ResultDO resultDO) {
+                    long i=atomicLong.getAndIncrement();
+                    if(i==1000000){
+                        System.out.println("完成了"+(System.nanoTime()-current));
+                    }
+//                    if (OK == code) {
+//                        System.out.println("success");
+//                        if(resultDO instanceof  NameResultDO){
+//                            System.out.println("name:"+((NameResultDO)resultDO).getName());
+//                        }
+//
+//                    } else {
+//                        System.out.println("error" + code);
+//                    }
+                }
+            });
+            dc.send(requestPacket);
+        }
+
     }
 }
