@@ -1,4 +1,4 @@
-package lab.mars.server;
+package lab.mars.dc.server;
 
 import io.netty.channel.Channel;
 import lab.mars.dc.*;
@@ -8,10 +8,8 @@ import lab.mars.dc.persistence.DCDatabaseService;
 import lab.mars.dc.reflection.ResourceReflection;
 import lab.mars.dc.server.RangeDO;
 import lab.mars.dc.server.ResourceServiceDO;
+import lab.mars.dc.util.MD5Hash;
 
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -27,17 +25,6 @@ import static lab.mars.dc.exception.DCException.Code.OK;
  * DC的处理逻辑
  */
 public class DCProcessor {
-
-    private static ThreadLocal<MessageDigest> MD5 = new ThreadLocal<MessageDigest>() {
-        @Override
-        protected final MessageDigest initialValue() {
-            try {
-                return MessageDigest.getInstance("MD5");
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException("++++ no md5 algorythm found");
-            }
-        }
-    };
     private ConcurrentHashMap<String, ResourceService> resourceServices = new ConcurrentHashMap<>();
     private DCDatabaseService dcDatabaseService;
     private TreeMap<Long, RangeDO> endRangeDOMap = new TreeMap<Long, RangeDO>();
@@ -46,16 +33,6 @@ public class DCProcessor {
         this.dcDatabaseService = dcDatabaseService;
     }
 
-    public static long md5HashingAlg(String key) {
-        MessageDigest md5 = MD5.get();
-        md5.reset();
-        md5.update(key.getBytes(Charset.forName("utf-8")));
-        byte[] bKey = md5.digest();
-        long res = ((long) (bKey[3] & 0xFF) << 24)
-                | ((long) (bKey[2] & 0xFF) << 16)
-                | ((long) (bKey[1] & 0xFF) << 8) | (long) (bKey[0] & 0xFF);
-        return res;
-    }
 
     /**
      * 执行逻辑处理
@@ -169,7 +146,7 @@ public class DCProcessor {
         while (iterator.hasNext()) {
             while (iterator.hasNext()) {
                 String key = iterator.next();
-                if (!judgeIsHandle(md5HashingAlg(key))) {
+                if (!judgeIsHandle(MD5Hash.md5HashingAlg(key))) {
                     ResourceService resourceService = resourceServices.get(key);
                     resourceService.shutdown();
                     iterator.remove();

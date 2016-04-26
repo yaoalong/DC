@@ -13,7 +13,7 @@ public class DCDatabaseCreateTest extends DCTestBase {
     @Test
     public void testCreate() throws DCException {
         long currentTime=System.currentTimeMillis();
-        for (int i = 1; i < 100000; i++) {
+        for (int i = 1; i < 10; i++) {
             ResourceServiceDO resourceServiceDO = new ResourceServiceDO();
             resourceServiceDO.setData(("allen" + i).getBytes());
             resourceServiceDO.setId("" + i);

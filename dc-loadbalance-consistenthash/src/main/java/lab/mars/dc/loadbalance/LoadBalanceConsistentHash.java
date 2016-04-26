@@ -1,6 +1,7 @@
 package lab.mars.dc.loadbalance;
 
 import lab.mars.dc.server.RangeDO;
+import lab.mars.dc.util.MD5Hash;
 import lab.mars.server.DCProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,18 +20,6 @@ import java.util.*;
 
 public class LoadBalanceConsistentHash implements LoadBalanceService {
     private static Logger LOG = LoggerFactory.getLogger(LoadBalanceConsistentHash.class);
-    private static ThreadLocal<MessageDigest> MD5 = new ThreadLocal<MessageDigest>() {
-        @Override
-        protected final MessageDigest initialValue() {
-            try {
-                return MessageDigest.getInstance("MD5");
-            } catch (NoSuchAlgorithmException e) {
-                if (LOG.isErrorEnabled())
-                    LOG.error("++++ no md5 algorithm found");
-                throw new IllegalStateException("++++ no md5 algorythm found");
-            }
-        }
-    };
     /**
      * 默认虚拟节点是一个
      */
@@ -42,22 +31,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     private DCProcessor dcProcessor;
 
     private String myIp;
-    /**
-     * 计算一个key的hash值
-     *
-     * @param key
-     * @return
-     */
-    public static long md5HashingAlg(String key) {
-        MessageDigest md5 = MD5.get();
-        md5.reset();
-        md5.update(key.getBytes(Charset.forName("utf-8")));
-        byte[] bKey = md5.digest();
-        long res = ((long) (bKey[3] & 0xFF) << 24)
-                | ((long) (bKey[2] & 0xFF) << 16)
-                | ((long) (bKey[1] & 0xFF) << 8) | (long) (bKey[0] & 0xFF);
-        return res;
-    }
+
 
 
     public void populateConsistentBuckets() {
@@ -72,7 +46,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     }
 
     private void getConsistentBuckets(List<String> servers) {
-        MessageDigest md5 = MD5.get();
+        MessageDigest md5 = MD5Hash.MD5.get();
         for (int i = 0; i < servers.size(); i++) {
             for (long j = 0; j < numOfVirtualNode; j++) {
                 byte[] d = md5.digest((servers.get(i) + "-" + j).getBytes(Charset.forName("utf-8")));
@@ -114,7 +88,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     }
 
     private final long getBucket(String key) {
-        long hc = md5HashingAlg(key);
+        long hc = MD5Hash.md5HashingAlg(key);
         long result = findPointFor(hc);
         return result;
     }

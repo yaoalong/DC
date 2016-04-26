@@ -18,9 +18,10 @@
         <module>dc-db-interface</module>
         <module>dc-db-cassandra</module>
         <module>dc-resource-pojo</module>
-        <module>dc-logic</module>
         <module>dc-start</module>
         <module>dc-collaboration-service-zk</module>
+        <module>dc-util</module>
+        <module>dc-handle</module>
     </modules>
 
 
