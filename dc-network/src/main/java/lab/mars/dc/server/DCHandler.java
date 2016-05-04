@@ -144,7 +144,6 @@ public class DCHandler {
 
         DCPacket dcPacket1 = pendingQueue.get(dcPacket.getCid());
         dcPacket1.setResponsePacket(dcPacket.getResponsePacket());
-        ResponsePacket responsePacket = dcPacket.getResponsePacket();
         handleResponse(dcPacket);
 
     }

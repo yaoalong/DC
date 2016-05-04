@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
  * Email:yaoalong@foxmail.com
  */
 public class MD5Hash {
-    public static ThreadLocal<MessageDigest> MD5 = new ThreadLocal<MessageDigest>() {
+    public static final ThreadLocal<MessageDigest> MD5 = new ThreadLocal<MessageDigest>() {
         @Override
         protected final MessageDigest initialValue() {
             try {

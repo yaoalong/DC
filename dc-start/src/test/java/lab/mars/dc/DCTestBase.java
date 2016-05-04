@@ -37,8 +37,14 @@ public class DCTestBase {
     };
 
     @Before
-    public void testBefore() throws IOException, DCConfig.ConfigException {
-        dc.start(new String[]{"zoo1.cfg"});
+    public void testBefore()  {
+        try {
+            dc.start(new String[]{"zoo.cfg"});
+        } catch (DCConfig.ConfigException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("/root");
         requestPacket.setOperateType(OperateType.CREATE);
