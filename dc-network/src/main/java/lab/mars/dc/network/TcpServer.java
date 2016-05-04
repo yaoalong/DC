@@ -3,7 +3,6 @@ package lab.mars.dc.network;
 import lab.mars.dc.connectmanage.LRUManage;
 import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.network.initializer.PacketServerChannelInitializer;
-import lab.mars.dc.persistence.DCDatabaseService;
 import lab.mars.server.DCProcessor;
 
 /**
@@ -15,10 +14,9 @@ public class TcpServer extends TcpServerNetwork {
 
     private DCProcessor dcProcessor;
 
-    public TcpServer(String self, Integer numberOfConnections, LoadBalanceService loadBalanceService, DCDatabaseService dcDatabaseService) {
-        System.out.println("GG"+numberOfConnections);
+    public TcpServer(String self, Integer numberOfConnections, LoadBalanceService loadBalanceService, DCProcessor dcProcessor) {
         LRUManage lruManage = new LRUManage(numberOfConnections);
-        dcProcessor = new DCProcessor(dcDatabaseService);
+        this.dcProcessor = dcProcessor;
         setChannelChannelInitializer(new PacketServerChannelInitializer(self,
                 lruManage, loadBalanceService, dcProcessor));
 
@@ -28,10 +26,6 @@ public class TcpServer extends TcpServerNetwork {
     public void close() {
         dcProcessor.close();
         super.close();
-
-
     }
-
-
 }
 

@@ -39,7 +39,7 @@ public class DCTestBase {
     @Before
     public void testBefore()  {
         try {
-            dc.start(new String[]{"zoo.cfg"});
+            dc.start(new String[]{"zoo1.cfg"});
         } catch (DCConfig.ConfigException e) {
             e.printStackTrace();
         } catch (IOException e) {

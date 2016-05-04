@@ -93,12 +93,12 @@ public class DC {
         DCConfig dcConfig = new DCConfig();
         dcConfig.parse(args[0]);
         String ipAndPort = dcConfig.myIp + ":" + dcConfig.port;
-        DCProcessor dcProcessor=new DCProcessor(new DCDatabaseImpl());
+        DCProcessor dcProcessor = new DCProcessor(new DCDatabaseImpl());
         LoadBalanceConsistentHash loadBalanceConsistentHash = new LoadBalanceConsistentHash();
         loadBalanceConsistentHash.setNumOfVirtualNode(dcConfig.numberOfViturlNodes);
         loadBalanceConsistentHash.setDCProcessor(dcProcessor);
         loadBalanceConsistentHash.setMyIp(ipAndPort);
-        tcpServer = new TcpServer(ipAndPort, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash, new DCDatabaseImpl());
+        tcpServer = new TcpServer(ipAndPort, dcConfig.numberOfViturlNodes, loadBalanceConsistentHash, dcProcessor);
         try {
             tcpServer.bind(dcConfig.myIp, dcConfig.port);
         } catch (InterruptedException e) {
