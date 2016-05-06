@@ -3,7 +3,7 @@ package lab.mars.dc.network;
 import lab.mars.dc.connectmanage.LRUManage;
 import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.network.initializer.PacketServerChannelInitializer;
-import lab.mars.server.DCProcessor;
+import lab.mars.dc.server.DCProcessor;
 
 /**
  * Author:yaoalong.

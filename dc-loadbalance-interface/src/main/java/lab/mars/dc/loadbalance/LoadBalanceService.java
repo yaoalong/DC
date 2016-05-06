@@ -1,7 +1,7 @@
 package lab.mars.dc.loadbalance;
 
+import lab.mars.dc.server.DCProcessor;
 import lab.mars.dc.server.RangeDO;
-import lab.mars.server.DCProcessor;
 
 import java.util.List;
 

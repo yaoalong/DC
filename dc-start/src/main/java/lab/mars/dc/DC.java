@@ -7,7 +7,7 @@ import lab.mars.dc.loadbalance.LoadBalanceConsistentHash;
 import lab.mars.dc.network.TcpServer;
 import lab.mars.dc.persistence.DCDatabaseImpl;
 import lab.mars.dc.server.DCHandler;
-import lab.mars.server.DCProcessor;
+import lab.mars.dc.server.DCProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

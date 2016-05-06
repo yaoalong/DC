@@ -1,14 +1,13 @@
 package lab.mars.dc.loadbalance;
 
+import lab.mars.dc.server.DCProcessor;
 import lab.mars.dc.server.RangeDO;
 import lab.mars.dc.util.MD5Hash;
-import lab.mars.server.DCProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 /**
@@ -31,7 +30,6 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
     private DCProcessor dcProcessor;
 
     private String myIp;
-
 
 
     public void populateConsistentBuckets() {
@@ -58,7 +56,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
                 consistentBuckets.put(k, servers.get(i));
             }
         }
-        }
+    }
 
 
     @Override
@@ -84,7 +82,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
 
     @Override
     public void setDCProcessor(DCProcessor dcProcessor) {
-        this.dcProcessor=dcProcessor;
+        this.dcProcessor = dcProcessor;
     }
 
     private final long getBucket(String key) {
@@ -99,6 +97,7 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
                 .firstKey();
 
     }
+
     public List<RangeDO> getRanges(String server) {
         List<RangeDO> result = new ArrayList<>();
         if (consistentBuckets.isEmpty()) {
@@ -125,6 +124,6 @@ public class LoadBalanceConsistentHash implements LoadBalanceService {
 
     @Override
     public void setMyIp(String myIp) {
-        this.myIp=myIp;
+        this.myIp = myIp;
     }
 }

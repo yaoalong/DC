@@ -6,7 +6,7 @@ import lab.mars.dc.DCPacket;
 import lab.mars.dc.connectmanage.LRUManage;
 import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.server.DCHandler;
-import lab.mars.server.DCProcessor;
+import lab.mars.dc.server.DCProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

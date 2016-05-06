@@ -6,7 +6,6 @@ import lab.mars.dc.exception.DCException;
 import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.network.TcpClient;
 import lab.mars.dc.reflection.ResourceReflection;
-import lab.mars.server.DCProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

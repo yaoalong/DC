@@ -4,7 +4,7 @@ import io.netty.channel.ChannelPipeline;
 import lab.mars.dc.connectmanage.LRUManage;
 import lab.mars.dc.loadbalance.LoadBalanceService;
 import lab.mars.dc.network.handler.ServerChannelHandler;
-import lab.mars.server.DCProcessor;
+import lab.mars.dc.server.DCProcessor;
 
 public class PacketServerChannelInitializer extends TcpChannelInitializer {
     private LRUManage lruManage;
