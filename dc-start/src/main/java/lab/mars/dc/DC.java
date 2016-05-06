@@ -117,4 +117,14 @@ public class DC {
         dcHandler.close();
         tcpServer.close();
     }
+
+    /**
+     * 是否本地处理
+     *
+     * @param key
+     * @return
+     */
+    public boolean isLocal(String key) {
+        return false;
+    }
 }
