@@ -91,7 +91,6 @@ public class ResourceOperateTest extends DCTestBase {
      */
     @Test
     public void testCalcuateResource() {
-
         RequestPacket requestPacket = new RequestPacket();
         requestPacket.setId("/root");
         requestPacket.setOperateType(OperateType.SERVICE);
